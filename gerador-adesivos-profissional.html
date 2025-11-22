@@ -443,10 +443,39 @@
                 <h3 class="text-sm font-bold text-gray-300 mb-3">Configurações</h3>
                 <div class="space-y-3">
                     <div>
-                        <label class="text-xs text-gray-400 mb-1 block">Tamanho</label>
+                        <label class="text-xs text-gray-400 mb-1 block">Formato da Folha</label>
+                        <div class="select-wrapper">
+                            <select id="paperFormat" onchange="handlePaperFormatChange()">
+                                <option value="210,297" selected>A4 (210x297mm)</option>
+                                <option value="148,210">A5 (148x210mm)</option>
+                                <option value="297,420">A3 (297x420mm)</option>
+                                <option value="216,279">Carta (216x279mm)</option>
+                                <option value="216,356">Ofício (216x356mm)</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="customPaperSize" style="display: none;">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-400 mb-1 block">Largura (mm)</label>
+                                <input type="number" id="customWidth" min="50" max="1000" value="210"
+                                    class="search-input" onchange="updateStats()" placeholder="210">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 mb-1 block">Altura (mm)</label>
+                                <input type="number" id="customHeight" min="50" max="1000" value="297"
+                                    class="search-input" onchange="updateStats()" placeholder="297">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Tamanho Adesivo</label>
                         <div class="select-wrapper">
                             <select id="stickerSize" onchange="updateStats()">
                                 <option value="10">10mm</option>
+                                <option value="15">15mm</option>
+                                <option value="20">20mm</option>
                                 <option value="25">25mm</option>
                                 <option value="30" selected>30mm</option>
                                 <option value="35">35mm</option>
@@ -471,6 +500,15 @@
                                 <option value="circle" selected>Círculo</option>
                                 <option value="square">Quadrado</option>
                                 <option value="rounded">Arredondado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Fundo do Adesivo</label>
+                        <div class="select-wrapper">
+                            <select id="stickerBackground" onchange="updateStats()">
+                                <option value="transparent" selected>Transparente</option>
+                                <option value="icon_color">Cor do Ícone</option>
                             </select>
                         </div>
                     </div>
@@ -1123,14 +1161,40 @@
             document.getElementById('generateBtn').disabled = count === 0;
         }
 
+        function getPaperDimensions() {
+            const paperFormat = document.getElementById('paperFormat').value;
+
+            if (paperFormat === 'custom') {
+                const width = parseInt(document.getElementById('customWidth').value) || 210;
+                const height = parseInt(document.getElementById('customHeight').value) || 297;
+                return { width, height };
+            } else {
+                const [width, height] = paperFormat.split(',').map(Number);
+                return { width, height };
+            }
+        }
+
+        function handlePaperFormatChange() {
+            const paperFormat = document.getElementById('paperFormat').value;
+            const customDiv = document.getElementById('customPaperSize');
+
+            if (paperFormat === 'custom') {
+                customDiv.style.display = 'block';
+            } else {
+                customDiv.style.display = 'none';
+            }
+
+            updateStats();
+            updatePreview();
+        }
+
         function calculateMaxFit(stickerSize, spacing) {
-            const a4Width = 210;
-            const a4Height = 297;
+            const { width, height } = getPaperDimensions();
             const margin = 10;
 
             const cellSize = stickerSize + spacing;
-            const cols = Math.floor((a4Width - 2 * margin) / cellSize);
-            const rows = Math.floor((a4Height - 2 * margin) / cellSize);
+            const cols = Math.floor((width - 2 * margin) / cellSize);
+            const rows = Math.floor((height - 2 * margin) / cellSize);
 
             return cols * rows;
         }
@@ -1163,6 +1227,7 @@
                 const shape = document.getElementById('stickerShape').value;
                 const maxFit = calculateMaxFit(stickerSize, spacing);
 
+
                 const uniqueSelectedLangIds = Array.from(selectedLanguages.keys());
                 const iconsData = await fetchAllIcons(uniqueSelectedLangIds, false);
 
@@ -1190,6 +1255,7 @@
                 const spacing = parseInt(document.getElementById('spacing').value);
                 const shape = document.getElementById('stickerShape').value;
                 const maxFit = calculateMaxFit(stickerSize, spacing);
+
 
                 const uniqueSelectedLangIds = Array.from(selectedLanguages.keys());
                 const iconsData = await fetchAllIcons(uniqueSelectedLangIds, true);
@@ -1290,11 +1356,10 @@
             const end = Math.min(start + maxFit, expandedArray.length);
             const sheetLanguages = expandedArray.slice(start, end);
 
-            const a4Width = 210;
-            const a4Height = 297;
+            const { width: paperWidth, height: paperHeight } = getPaperDimensions();
             const margin = 10;
             const cellSize = stickerSize + spacing;
-            const cols = Math.floor((a4Width - 2 * margin) / cellSize);
+            const cols = Math.floor((paperWidth - 2 * margin) / cellSize);
 
             const layerConfig = {
                 cores: {
@@ -1317,10 +1382,10 @@
             const config = layerConfig[layerType];
 
             let svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${a4Width}mm" height="${a4Height}mm" viewBox="0 0 ${a4Width} ${a4Height}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<svg width="${paperWidth}mm" height="${paperHeight}mm" viewBox="0 0 ${paperWidth} ${paperHeight}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
   <title>${config.title}</title>
   <desc>${config.description}</desc>
-  <rect width="${a4Width}" height="${a4Height}" fill="${config.bgColor}"/>
+  <rect width="${paperWidth}" height="${paperHeight}" fill="${config.bgColor}"/>
 `;
 
             let defs = '\n  <defs>';
@@ -1358,6 +1423,19 @@
                 const iconId = `icon-${langId.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
                 svg += `\n  <g transform="translate(${x}, ${y})">`;
+
+                const stickerBackground = document.getElementById('stickerBackground').value;
+                if (layerType === 'cores' && stickerBackground === 'icon_color') {
+                    const bgColor = lang.color || '#cccccc'; // Cor padrão cinza se não houver cor
+                    const bgSize = stickerSize;
+                    const borderRadius = (shape === 'rounded') ? bgSize * 0.15 : 0;
+
+                    if (shape === 'circle') {
+                        svg += `\n    <circle cx="0" cy="0" r="${bgSize / 2}" fill="${bgColor}" />`;
+                    } else {
+                        svg += `\n    <rect x="${-bgSize / 2}" y="${-bgSize / 2}" width="${bgSize}" height="${bgSize}" rx="${borderRadius}" ry="${borderRadius}" fill="${bgColor}" />`;
+                    }
+                }
 
                 if (iconData.svgText) {
                     const fillColor = (layerType === 'branco' || layerType === 'verniz') ? 'fill="white"' : '';
