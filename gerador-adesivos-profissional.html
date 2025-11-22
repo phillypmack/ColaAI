@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>HardSkills - Gerador de Adesivos DTF UV</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com" rel="preconnect" />
@@ -227,38 +230,67 @@
             }
         }
 
+        /* Container customizado para select */
+        .select-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .select-wrapper::after {
+            content: '' !important;
+            position: absolute !important;
+            right: 12px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            width: 0 !important;
+            height: 0 !important;
+            border-left: 5px solid transparent !important;
+            border-right: 5px solid transparent !important;
+            border-top: 6px solid #9ca3af !important;
+            pointer-events: none !important;
+            transition: all 0.2s !important;
+        }
+
+        .select-wrapper:hover::after {
+            border-top-color: white !important;
+        }
+
         /* Estilo para os selects (menu lateral) */
         select {
-            background: linear-gradient(135deg, #2a2440 0%, #342d50 100%);
-            border: 1px solid #4b2bee;
+            background: #1e1933 !important;
+            border: 1px solid #3d3654 !important;
             color: white !important;
-            padding: 10px 14px;
-            border-radius: 8px;
-            width: 100%;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            -webkit-text-fill-color: rgb(0, 0, 0);
-            background-image: linear-gradient(135deg, #2a2440 0%, #342d50 100%);
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            background-size: 12px;
-            padding-right: 35px;
+            padding: 10px 32px 10px 16px !important;
+            border-radius: 6px !important;
+            width: 100% !important;
+            font-size: 14px !important;
+            font-weight: 400 !important;
+            cursor: pointer !important;
+            transition: all 0.2s !important;
+            -webkit-text-fill-color: white !important;
+            appearance: none !important;
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            box-shadow: none !important;
+            transform: none !important;
         }
 
         select:hover {
-            border-color: #5d3aff;
-            box-shadow: 0 0 0 3px rgba(75, 43, 238, 0.1);
+            border-color: #4b2bee !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        select:active {
+            transform: none !important;
+            box-shadow: none !important;
         }
 
         select:focus {
-            outline: none;
-            border-color: #5d3aff;
-            box-shadow: 0 0 0 3px rgba(75, 43, 238, 0.2);
+            outline: none !important;
+            border-color: #4b2bee !important;
+            box-shadow: 0 0 0 1px #4b2bee !important;
+            transform: none !important;
         }
 
         /* Estilo para os inputs de quantidade (cards dos ícones) */
@@ -403,29 +435,35 @@
                 <div class="space-y-3">
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Tamanho</label>
-                        <select id="stickerSize" onchange="updateStats()">
-                            <option value="10">10mm</option>
-                            <option value="25">25mm</option>
-                            <option value="30" selected>30mm</option>
-                            <option value="35">35mm</option>
-                            <option value="40">40mm</option>
-                        </select>
+                        <div class="select-wrapper">
+                            <select id="stickerSize" onchange="updateStats()">
+                                <option value="10">10mm</option>
+                                <option value="25">25mm</option>
+                                <option value="30" selected>30mm</option>
+                                <option value="35">35mm</option>
+                                <option value="40">40mm</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Espaçamento</label>
-                        <select id="spacing" onchange="updateStats()">
-                            <option value="5">5mm</option>
-                            <option value="10" selected>10mm</option>
-                            <option value="15">15mm</option>
-                        </select>
+                        <div class="select-wrapper">
+                            <select id="spacing" onchange="updateStats()">
+                                <option value="5">5mm</option>
+                                <option value="10" selected>10mm</option>
+                                <option value="15">15mm</option>
+                            </select>
+                        </div>
                     </div>
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Forma</label>
-                        <select id="stickerShape" onchange="updatePreview()">
-                            <option value="circle" selected>Círculo</option>
-                            <option value="square">Quadrado</option>
-                            <option value="rounded">Arredondado</option>
-                        </select>
+                        <div class="select-wrapper">
+                            <select id="stickerShape" onchange="updatePreview()">
+                                <option value="circle" selected>Círculo</option>
+                                <option value="square">Quadrado</option>
+                                <option value="rounded">Arredondado</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
