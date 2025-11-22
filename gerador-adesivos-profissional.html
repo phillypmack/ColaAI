@@ -1,510 +1,210 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html class="dark" lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Adesivos - Impressão Profissional A4</title>
+    <title>HardSkills - Gerador de Adesivos DTF UV</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        .container {
-            max-width: 1800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-        }
-
-        h1 {
-            text-align: center;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5em;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .subtitle {
-            text-align: center;
-            color: #666;
-            margin-bottom: 30px;
-            font-size: 1.2em;
-        }
-
-        .info-box {
-            background: linear-gradient(135deg, #f0f4ff 0%, #e8ecff 100%);
-            border-left: 5px solid #667eea;
-            padding: 25px;
-            margin-bottom: 30px;
-            border-radius: 12px;
-        }
-
-        .info-box h3 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-
-        .info-box ul {
-            margin-left: 20px;
-        }
-
-        .info-box li {
-            margin: 8px 0;
-            color: #555;
-            line-height: 1.6;
-        }
-
-        .selection-info {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .selection-count {
-            font-size: 1.3em;
-            font-weight: 700;
-        }
-
-        .selection-actions {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 1em;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-primary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .btn-secondary:hover:not(:disabled) {
-            background: #f8f9fa;
-            transform: translateY(-2px);
-        }
-
-        .btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .layout-config {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            border: 2px solid #e9ecef;
-            margin-bottom: 20px;
-        }
-
-        .layout-title {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .layout-options {
-            display: flex;
-            /* Changed to flex for better alignment after removing one option */
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .layout-option label {
-            font-weight: 600;
-            color: #555;
-            min-width: 140px;
-        }
-
-        .layout-option select {
-            flex: 1;
-            padding: 10px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 1em;
-        }
-
-        .layout-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .quantity-selector {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .category {
-            margin-bottom: 40px;
-        }
-
-        .category-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 18px 25px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .category-title {
-            font-size: 1.4em;
-            font-weight: 700;
-        }
-
-        .category-actions {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-        }
-
-        .category-count {
-            background: rgba(255, 255, 255, 0.25);
-            padding: 6px 18px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-        }
-
-        .select-all-category {
-            background: rgba(255, 255, 255, 0.9);
-            color: #667eea;
-            padding: 8px 16px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.9em;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .select-all-category:hover {
-            background: white;
-            transform: scale(1.05);
-        }
-
-        .languages-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 20px;
-        }
-
-        .language-card {
-            background: white;
-            border: 3px solid #e9ecef;
-            border-radius: 14px;
-            padding: 20px;
-            text-align: center;
-            transition: all 0.3s;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .language-card.selected {
-            border-color: #28a745;
-            background: linear-gradient(135deg, #f0fff4 0%, #e6ffed 100%);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.2);
-        }
-
-        .language-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-        }
-
-        .selection-badge {
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.1em;
-            box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
-        }
-
-        .language-card.selected .selection-badge {
-            display: flex;
-        }
-
-        .language-icon {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 10px;
-        }
-
-        .language-icon img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-
-        .language-name {
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 1.05em;
-        }
-
-        .stats-bar {
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-            padding: 15px 25px;
-            border-radius: 12px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .stat-label {
-            font-size: 0.85em;
-            color: #666;
-            font-weight: 600;
-        }
-
-        .stat-value {
-            font-size: 1.5em;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        .quantity-selector input {
-            width: 60px;
-            text-align: center;
-            padding: 5px;
-            border: 2px solid #ccc;
-            border-radius: 6px;
-            font-size: 1em;
-        }
-
-        .search-box {
-            margin-bottom: 20px;
-        }
-
-        .search-box input {
-            width: 100%;
-            padding: 15px 20px;
-            font-size: 16px;
-            border: 2px solid #ddd;
-            border-radius: 12px;
-            outline: none;
-        }
-
-        .search-box input:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
-        }
-
-        .loading-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            z-index: 10001;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .loading-overlay.active {
-            display: flex;
-        }
-
-        .loading-content {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-        }
-
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 6px solid #f3f3f3;
-            border-top: 6px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-
-            100% {
-                transform: rotate(360deg);
-            }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24
         }
     </style>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#4b2bee",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#131022",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
 </head>
 
-<body>
-    <div class="container">
-        <h1>🎨 Gerador Profissional de Adesivos A4</h1>
-        <p class="subtitle">Selecione os ícones e gere arquivo pronto para gráfica</p>
+<body class="bg-background-light dark:bg-background-dark font-display text-gray-800 dark:text-gray-200">
+    <div class="relative flex min-h-screen w-full flex-col overflow-x-hidden">
+        <main class="layout-container flex h-full grow flex-col">
+            <div class="px-4 sm:px-10 md:px-20 lg:px-40 flex flex-1 justify-center py-5">
+                <div class="layout-content-container flex flex-col w-full max-w-[1400px] flex-1">
 
-        <div class="info-box">
-            <h3>📋 Como Funciona - Impressão DTF UV Alto Relevo 3D</h3>
-            <ul>
-                <li><strong>1️⃣ Selecione:</strong> Clique nos ícones ou use "Selecionar Categoria" para grupos</li>
-                <li><strong>2️⃣ Configure:</strong> Escolha tamanho, espaçamento e formato</li>
-                <li><strong>3️⃣ Gere:</strong> Baixe 3 arquivos SVG por folha (CORES + BRANCO + VERNIZ)</li>
-                <li><strong>🎨 CORES:</strong> Ícones CMYK coloridos (camada de impressão colorida)</li>
-                <li><strong>⚪ BRANCO:</strong> Silhuetas brancas em fundo preto (camada de tinta branca)</li>
-                <li><strong>✨ VERNIZ:</strong> Áreas de relevo em branco (camada UV para efeito 3D tátil)</li>
-                <li><strong>💡 Dica:</strong> Envie os 3 arquivos para gráfica DTF UV!</li>
-            </ul>
-        </div>
+                    <!-- Hero Section -->
+                    <div class="@container">
+                        <div class="@[480px]:p-4">
+                            <div class="flex min-h-[400px] flex-col gap-6 bg-cover bg-center bg-no-repeat @[480px]:gap-8 items-center justify-center p-4 rounded-xl" style="background-image: linear-gradient(rgba(19, 16, 34, 0.6) 0%, rgba(19, 16, 34, 0.9) 100%), url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1200&auto=format&fit=crop');">
+                                <div class="flex flex-col gap-2 text-center">
+                                    <h1 class="text-white text-4xl font-bold leading-tight tracking-[-0.033em] @[480px]:text-5xl @[480px]:font-bold @[480px]:leading-tight @[480px]:tracking-[-0.033em]">
+                                        HardSkills
+                                    </h1>
+                                    <h2 class="text-gray-300 text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal">
+                                        Seus ícones de tech prontos para impressão DTF UV com alto relevo 3D.
+                                    </h2>
+                                </div>
 
-        <div class="selection-info">
-            <div class="selection-count">
-                <span id="selectedCount">0</span> ícones selecionados
-            </div>
-            <div class="selection-actions">
-                <button class="btn btn-secondary" onclick="clearSelection()">
-                    🗑️ Limpar
-                </button>
-                <button class="btn btn-primary" onclick="generateFiles()" id="generateBtn" disabled>
-                    📥 Gerar Arquivo A4
-                </button>
-            </div>
-        </div>
+                                <!-- Search Box -->
+                                <label class="flex flex-col min-w-40 h-14 w-full max-w-[480px] @[480px]:h-16">
+                                    <div class="flex w-full flex-1 items-stretch rounded-lg h-full shadow-lg">
+                                        <div class="text-gray-400 flex border border-gray-700 bg-[#1e1933] items-center justify-center pl-4 rounded-l-lg border-r-0">
+                                            <span class="material-symbols-outlined">search</span>
+                                        </div>
+                                        <input id="searchInput" onkeyup="filterLanguages()" class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-white focus:outline-0 focus:ring-0 border border-gray-700 bg-[#1e1933] focus:border-primary h-full placeholder:text-gray-400 px-4 pr-2 border-l-0 rounded-r-lg text-sm font-normal leading-normal @[480px]:text-base @[480px]:font-normal @[480px]:leading-normal" placeholder="Buscar por nome..." value="" />
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
 
-        <div class="layout-config">
-            <div class="layout-title">⚙️ Configurações</div>
-            <div class="layout-options">
-                <div class="layout-option">
-                    <label>Tamanho:</label>
-                    <select id="stickerSize" onchange="updateStats()">
-                        <option value="10">10mm (Pequeno)</option>
-                        <option value="25">25mm (Médio)</option>
-                        <option value="30" selected>30mm (Grande)</option>
-                        <option value="35">35mm (Muito Grande)</option>
-                        <option value="40">40mm (Extra Grande)</option>
-                    </select>
+                    <!-- Info Box -->
+                    <div class="mt-6 p-6 bg-[#1e1933] border border-gray-700 rounded-xl">
+                        <h3 class="text-primary text-lg font-bold mb-3">Como Funciona - Impressão DTF UV Alto Relevo 3D</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-300">
+                            <div class="flex gap-2">
+                                <span class="text-primary">1️⃣</span>
+                                <div><strong class="text-white">Selecione:</strong> Clique nos ícones ou use "Selecionar" para categorias</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-primary">2️⃣</span>
+                                <div><strong class="text-white">Configure:</strong> Escolha tamanho, espaçamento e formato</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-primary">3️⃣</span>
+                                <div><strong class="text-white">Gere:</strong> Baixe 3 arquivos SVG por folha (CORES + BRANCO + VERNIZ)</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-primary">🎨</span>
+                                <div><strong class="text-white">CORES:</strong> Ícones CMYK coloridos</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-primary">⚪</span>
+                                <div><strong class="text-white">BRANCO:</strong> Silhuetas brancas (camada base opaca)</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <span class="text-primary">✨</span>
+                                <div><strong class="text-white">VERNIZ:</strong> Áreas de relevo UV 3D</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Configuration -->
+                    <div class="mt-6 p-6 bg-[#1e1933] border border-gray-700 rounded-xl">
+                        <h3 class="text-white text-lg font-bold mb-4">Configurações</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="text-gray-400 text-sm mb-2 block">Tamanho do Adesivo</label>
+                                <select id="stickerSize" onchange="updateStats()" class="w-full bg-[#2a2440] border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+                                    <option value="10">10mm (Pequeno)</option>
+                                    <option value="25">25mm (Médio)</option>
+                                    <option value="30" selected>30mm (Grande)</option>
+                                    <option value="35">35mm (Muito Grande)</option>
+                                    <option value="40">40mm (Extra Grande)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-gray-400 text-sm mb-2 block">Espaçamento</label>
+                                <select id="spacing" onchange="updateStats()" class="w-full bg-[#2a2440] border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+                                    <option value="5">5mm</option>
+                                    <option value="10" selected>10mm</option>
+                                    <option value="15">15mm</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-gray-400 text-sm mb-2 block">Forma</label>
+                                <select id="stickerShape" onchange="updatePreview()" class="w-full bg-[#2a2440] border border-gray-700 text-white rounded-lg px-4 py-2 focus:border-primary focus:outline-none">
+                                    <option value="circle" selected>Círculo</option>
+                                    <option value="square">Quadrado</option>
+                                    <option value="rounded">Arredondado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Bar -->
+                    <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="p-4 bg-[#1e1933] border border-gray-700 rounded-xl text-center">
+                            <div class="text-gray-400 text-xs mb-1">Ícones Únicos</div>
+                            <div id="selectedIcons" class="text-primary text-3xl font-bold">0</div>
+                        </div>
+                        <div class="p-4 bg-[#1e1933] border border-gray-700 rounded-xl text-center">
+                            <div class="text-gray-400 text-xs mb-1">Total de Adesivos</div>
+                            <div id="totalStickers" class="text-primary text-3xl font-bold">0</div>
+                        </div>
+                        <div class="p-4 bg-[#1e1933] border border-gray-700 rounded-xl text-center">
+                            <div class="text-gray-400 text-xs mb-1">Cabem no A4</div>
+                            <div id="maxFit" class="text-primary text-3xl font-bold">48</div>
+                        </div>
+                        <div class="p-4 bg-[#1e1933] border border-gray-700 rounded-xl text-center">
+                            <div class="text-gray-400 text-xs mb-1">Folhas Necessárias</div>
+                            <div id="sheetsNeeded" class="text-primary text-3xl font-bold">0</div>
+                        </div>
+                    </div>
+
+                    <!-- Preview -->
+                    <div class="mt-6 p-6 bg-[#1e1933] border border-gray-700 rounded-xl">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-white text-lg font-bold">Pré-visualização (Camada Cores)</h3>
+                            <button onclick="updatePreview()" class="px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-sm font-medium transition-colors">
+                                Atualizar Preview
+                            </button>
+                        </div>
+                        <div id="previewContainer" class="w-full max-w-md mx-auto bg-white rounded-lg p-4 aspect-[210/297] flex items-center justify-center">
+                            <div class="text-gray-400 text-center italic">
+                                Selecione ícones para ver a pré-visualização aqui.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Categories and Icons -->
+                    <div id="languagesContainer" class="mt-6"></div>
+
+                    <!-- Action Panel (Sticky Bottom) -->
+                    <div class="p-4 @container sticky bottom-4 mt-6">
+                        <div class="flex flex-1 flex-col items-start justify-between gap-4 rounded-lg border border-gray-700 bg-background-dark/90 backdrop-blur-sm p-5 @[480px]:flex-row @[480px]:items-center shadow-2xl">
+                            <div class="flex flex-col gap-1">
+                                <p class="text-white text-base font-bold leading-tight">
+                                    <span id="selectedCount">0</span> ícones selecionados
+                                </p>
+                                <p class="text-gray-400 text-sm font-normal leading-normal">Pronto para gerar seus arquivos de impressão DTF UV?</p>
+                            </div>
+                            <div class="flex gap-3">
+                                <button onclick="clearSelection()" class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-gray-700 hover:bg-gray-600 text-white text-sm font-bold leading-normal transition-colors">
+                                    <span class="truncate">Limpar</span>
+                                </button>
+                                <button id="generateBtn" onclick="generateFiles()" disabled class="flex min-w-[84px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-5 bg-primary text-white text-sm font-bold leading-normal hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span class="truncate">Gerar Arquivos</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="layout-option">
-                    <label>Espaçamento:</label>
-                    <select id="spacing" onchange="updateStats()">
-                        <option value="5">5mm</option>
-                        <option value="10" selected>10mm</option>
-                        <option value="15">15mm</option>
-                    </select>
-                </div>
-                <div class="layout-option">
-                    <label>Forma:</label>
-                    <select id="stickerShape">
-                        <option value="circle" selected>Círculo</option>
-                        <option value="square">Quadrado</option>
-                        <option value="rounded">Arredondado</option>
-                    </select>
-                </div>
             </div>
-        </div>
-
-        <div class="stats-bar">
-            <div class="stat-item">
-                <span class="stat-label">Ícones Únicos</span>
-                <span class="stat-value" id="selectedIcons">0</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Total de Adesivos</span>
-                <span class="stat-value" id="totalStickers">0</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Cabem no A4</span>
-                <span class="stat-value" id="maxFit">48</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-label">Folhas Necessárias</span>
-                <span class="stat-value" id="sheetsNeeded">0</span>
-            </div>
-        </div>
-
-        <div class="search-box">
-            <input type="text" id="searchInput" placeholder="🔍 Buscar..." onkeyup="filterLanguages()">
-        </div>
-
-        <div id="languagesContainer"></div>
+        </main>
     </div>
 
-    <div class="loading-overlay" id="loadingOverlay">
-        <div class="loading-content">
-            <div class="spinner"></div>
-            <h3 style="color: #333;" id="loadingText">Baixando ícones...</h3>
-            <p style="color: #666; margin-top: 10px;" id="loadingProgress"></p>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="hidden fixed inset-0 bg-black/80 z-50 items-center justify-center">
+        <div class="bg-[#1e1933] border border-gray-700 rounded-xl p-8 text-center max-w-md">
+            <div class="w-16 h-16 border-4 border-gray-700 border-t-primary rounded-full animate-spin mx-auto mb-4"></div>
+            <h3 id="loadingText" class="text-white text-lg font-bold mb-2">Baixando ícones...</h3>
+            <p id="loadingProgress" class="text-gray-400 text-sm"></p>
         </div>
     </div>
 
@@ -599,10 +299,27 @@
                 { name: "Bitbucket", devicon: "bitbucket", color: "#0052cc" },
                 { name: "Nginx", devicon: "nginx", color: "#009639" },
                 { name: "Apache", devicon: "apache", color: "#d22128" },
+                { name: "Grafana", devicon: "grafana", color: "#f46800" },
+                { name: "Prometheus", devicon: "prometheus", color: "#e6522c" }
+            ],
+            "🐧 Distribuições Linux": [
                 { name: "Linux", devicon: "linux", color: "#fcc624" },
                 { name: "Ubuntu", devicon: "ubuntu", color: "#e95420" },
                 { name: "Debian", devicon: "debian", color: "#a80030" },
-                { name: "Fedora", devicon: "fedora", color: "#51a2da" }
+                { name: "Fedora", devicon: "fedora", color: "#51a2da" },
+                { name: "Arch Linux", devicon: "archlinux", color: "#1793d1" },
+                { name: "CentOS", devicon: "centos", color: "#212429" },
+                { name: "elementary OS", devicon: "elementary", color: "#64baff" },
+                { name: "Gentoo", devicon: "gentoo", color: "#54487a" },
+                { name: "Kali Linux", devicon: "kalilinux", color: "#557c94" },
+                { name: "Manjaro", devicon: "manjaro", color: "#35bf5c" },
+                { name: "Linux Mint", devicon: "linuxmint", color: "#87cf3e" },
+                { name: "NixOS", devicon: "nixos", color: "#7ed5ea" },
+                { name: "openSUSE", devicon: "opensuse", color: "#73ba25" },
+                { name: "Raspberry Pi", devicon: "raspberrypi", color: "#c51a4a" },
+                { name: "Red Hat", devicon: "redhat", color: "#ee0000" },
+                { name: "Rocky Linux", devicon: "rockylinux", color: "#10b981" },
+                { name: "SUSE", devicon: "suse", color: "#0c322c" }
             ],
             "🛠️ Ferramentas e Ecossistema": [
                 { name: "VS Code", devicon: "vscode", color: "#007acc" },
@@ -647,11 +364,19 @@
                 { name: "Scikit-learn", devicon: "scikit-learn", color: "#f7931e" },
                 { name: "Keras", devicon: "keras", color: "#d00000" },
                 { name: "Hugging Face", devicon: "huggingface", color: "#ffde31" },
-                { name: "OpenAI", devicon: "openai", color: "#412991" }
+                { name: "OpenAI", devicon: "chatgpt", color: "#74aa9c" },
+                { name: "ChatGPT", devicon: "chatgpt", color: "#74aa9c" },
+                { name: "LangChain", devicon: "langchain", color: "#000000" },
+                { name: "Midjourney", devicon: "midjourney", color: "#000000" },
+                { name: "Stable Diffusion", devicon: "stablediffusion", color: "#000000" },
+                { name: "Mistral AI", devicon: "mistralai", color: "#ff8c00" },
+                { name: "Google Gemini", devicon: "google_generative_ai", color: "#8950ff" },
+                { name: "Anaconda", devicon: "anaconda", color: "#44a833" },
+                { name: "Claude", devicon: "claude", color: "#d97757" }
             ]
         };
 
-        let selectedLanguages = new Map(); // Usa Map para armazenar { langId: quantity }
+        let selectedLanguages = new Map();
 
         function renderLanguages() {
             const container = document.getElementById('languagesContainer');
@@ -659,46 +384,48 @@
 
             for (const [category, languages] of Object.entries(languagesData)) {
                 const categoryDiv = document.createElement('div');
-                categoryDiv.className = 'category';
+                categoryDiv.className = 'mb-8';
 
-                categoryDiv.innerHTML = `
-                    <div class="category-header">
-                        <div class="category-title">${category}</div>
-                        <div class="category-actions">
-                            <button class="select-all-category" onclick="selectCategory('${category}', event)">
-                                ✓ Selecionar
+                const categoryHeader = `
+                    <div class="flex justify-between items-center mb-4 p-4 bg-[#1e1933] border border-gray-700 rounded-xl">
+                        <h3 class="text-white text-lg font-bold">${category}</h3>
+                        <div class="flex items-center gap-3">
+                            <span class="text-gray-400 text-sm">${languages.length} ícones</span>
+                            <button onclick="selectCategory('${category}', event)" class="px-4 py-2 bg-primary/20 hover:bg-primary/30 text-primary rounded-lg text-sm font-medium transition-colors">
+                                Selecionar
                             </button>
-                            <span class="category-count">${languages.length}</span>
                         </div>
                     </div>
                 `;
+                categoryDiv.innerHTML = categoryHeader;
 
                 const grid = document.createElement('div');
-                grid.className = 'languages-grid';
+                grid.className = 'grid grid-cols-[repeat(auto-fit,minmax(158px,1fr))] gap-4';
 
                 languages.forEach((lang, index) => {
+                    const langId = `${category.replace(/\s/g, '-')}-${index}`;
+                    const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
+
                     const card = document.createElement('div');
-                    card.className = 'language-card';
+                    card.className = 'relative group cursor-pointer bg-[#1e1933] border-2 border-gray-700 hover:border-primary flex flex-col gap-3 rounded-lg justify-end p-4 aspect-square transition-all duration-200';
                     card.dataset.name = lang.name.toLowerCase();
                     card.dataset.category = category;
-                    const langId = `${category.replace(/\s/g, '-')}-${index}`; // ID único e seguro
                     card.dataset.langid = langId;
                     card.dataset.langData = JSON.stringify(lang);
                     card.onclick = () => toggleSelection(card, lang);
 
-                    const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
-
                     card.innerHTML = `
-                        <div class="selection-badge">✓</div>
-                        <div class="language-icon">
-                            <img src="${iconUrl}" alt="${lang.name}">
+                        <div class="absolute inset-0 bg-primary opacity-0 group-hover:opacity-10 transition-opacity rounded-lg"></div>
+                        <div class="flex-1 flex items-center justify-center">
+                            <img src="${iconUrl}" alt="${lang.name}" class="w-20 h-20 object-contain">
                         </div>
-                        <div class="language-name">${lang.name}</div>
-                        <div class="quantity-selector" style="display: none; margin-top: 10px;">
-                            <label for="qty-${langId}">Qtd:</label> 
-                            <input type="number" id="qty-${langId}" min="1" value="1" 
-                                onchange="updateIconQuantity('${langId}', this.value)" 
-                                onclick="event.stopPropagation()"> 
+                        <p class="text-white text-sm font-bold text-center z-10">${lang.name}</p>
+                        <div class="quantity-selector hidden flex-col gap-2 z-10">
+                            <label class="text-gray-400 text-xs">Quantidade:</label>
+                            <input type="number" id="qty-${langId}" min="1" value="1"
+                                onchange="updateIconQuantity('${langId}', this.value)"
+                                onclick="event.stopPropagation()"
+                                class="w-full bg-[#2a2440] border border-gray-700 text-white rounded px-2 py-1 text-sm">
                         </div>
                     `;
 
@@ -709,40 +436,43 @@
                 container.appendChild(categoryDiv);
             }
 
-            // Re-apply selection state and quantities if page was re-rendered
             for (const [langId, quantity] of selectedLanguages.entries()) {
                 const card = document.querySelector(`[data-langid="${langId}"]`);
                 if (card) {
-                    card.classList.add('selected');
+                    card.classList.remove('border-gray-700');
+                    card.classList.add('border-primary', 'bg-primary/10');
                     const qtySelector = card.querySelector('.quantity-selector');
-                    if (qtySelector) qtySelector.style.display = 'flex'; // 'flex' para centralizar
+                    if (qtySelector) qtySelector.classList.remove('hidden');
                     const qtyInput = card.querySelector(`#qty-${langId}`);
                     if (qtyInput) qtyInput.value = quantity;
                 }
             }
 
             updateStats();
+            updatePreview();
         }
 
         function toggleSelection(card, lang) {
             const langId = card.dataset.langid;
-
             const qtySelector = card.querySelector('.quantity-selector');
             const qtyInput = card.querySelector(`#qty-${langId}`);
 
-            if (selectedLanguages.has(langId)) { // If already selected, deselect it
+            if (selectedLanguages.has(langId)) {
                 selectedLanguages.delete(langId);
-                card.classList.remove('selected');
-                if (qtySelector) qtySelector.style.display = 'none';
+                card.classList.remove('border-primary', 'bg-primary/10');
+                card.classList.add('border-gray-700');
+                if (qtySelector) qtySelector.classList.add('hidden');
                 if (qtyInput) qtyInput.value = 1;
-            } else { // If not selected, select it
+            } else {
                 selectedLanguages.set(langId, 1);
-                card.classList.add('selected');
-                if (qtySelector) qtySelector.style.display = 'flex';
-                if (qtyInput) qtyInput.value = 1; // Set quantity to 1
+                card.classList.remove('border-gray-700');
+                card.classList.add('border-primary', 'bg-primary/10');
+                if (qtySelector) qtySelector.classList.remove('hidden');
+                if (qtyInput) qtyInput.value = 1;
             }
 
             updateStats();
+            updatePreview();
         }
 
         function updateIconQuantity(langId, quantity) {
@@ -750,18 +480,18 @@
                 const qty = parseInt(quantity);
                 if (qty > 0) {
                     selectedLanguages.set(langId, qty);
-                } else { // Se a quantidade for 0 ou menos, remove a seleção
+                } else {
                     document.querySelector(`[data-langid="${langId}"]`).click();
                 }
             }
-
             updateStats();
+            updatePreview();
         }
 
         function selectCategory(category, event) {
             event.stopPropagation();
             const cards = document.querySelectorAll(`[data-category="${category}"]`);
-            const allSelected = Array.from(cards).every(card => card.classList.contains('selected'));
+            const allSelected = Array.from(cards).every(card => selectedLanguages.has(card.dataset.langid));
 
             cards.forEach(card => {
                 const langId = card.dataset.langid;
@@ -770,36 +500,40 @@
 
                 if (allSelected) {
                     selectedLanguages.delete(langId);
-                    card.classList.remove('selected');
-                    if (qtySelector) qtySelector.style.display = 'none';
+                    card.classList.remove('border-primary', 'bg-primary/10');
+                    card.classList.add('border-gray-700');
+                    if (qtySelector) qtySelector.classList.add('hidden');
                     if (qtyInput) qtyInput.value = 1;
                 } else {
                     selectedLanguages.set(langId, 1);
-                    card.classList.add('selected');
-                    if (qtySelector) qtySelector.style.display = 'flex';
+                    card.classList.remove('border-gray-700');
+                    card.classList.add('border-primary', 'bg-primary/10');
+                    if (qtySelector) qtySelector.classList.remove('hidden');
                     if (qtyInput) qtyInput.value = 1;
                 }
             });
 
             updateStats();
+            updatePreview();
         }
 
         function clearSelection() {
             selectedLanguages.clear();
-            document.querySelectorAll('.language-card').forEach(card => {
-                card.classList.remove('selected');
+            document.querySelectorAll('[data-langid]').forEach(card => {
+                card.classList.remove('border-primary', 'bg-primary/10');
+                card.classList.add('border-gray-700');
                 const qtySelector = card.querySelector('.quantity-selector');
-                if (qtySelector) qtySelector.style.display = 'none';
-                const qtyInput = card.querySelector(`input[type="number"]`);
+                if (qtySelector) qtySelector.classList.add('hidden');
+                const qtyInput = card.querySelector('input[type="number"]');
                 if (qtyInput) qtyInput.value = 1;
             });
             updateStats();
+            updatePreview();
         }
 
         function updateStats() {
             const count = selectedLanguages.size;
             let totalStickers = 0;
-            // Sum quantities from the map
             selectedLanguages.forEach(quantity => {
                 totalStickers += quantity;
             });
@@ -833,13 +567,25 @@
 
         function filterLanguages() {
             const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            document.querySelectorAll('.language-card').forEach(card => {
+            document.querySelectorAll('[data-langid]').forEach(card => {
                 card.style.display = card.dataset.name.includes(searchTerm) ? 'block' : 'none';
             });
         }
 
-        async function generateFiles() {
-            document.getElementById('loadingOverlay').classList.add('active');
+        async function updatePreview() {
+            const previewContainer = document.getElementById('previewContainer');
+            if (selectedLanguages.size === 0) {
+                previewContainer.innerHTML = `
+                    <div class="text-gray-400 text-center italic">
+                        Selecione ícones para ver a pré-visualização aqui.
+                    </div>`;
+                return;
+            }
+
+            previewContainer.innerHTML = `
+                <div class="text-gray-400 text-center italic">
+                    Gerando pré-visualização...
+                </div>`;
 
             try {
                 const stickerSize = parseInt(document.getElementById('stickerSize').value);
@@ -848,9 +594,37 @@
                 const maxFit = calculateMaxFit(stickerSize, spacing);
 
                 const uniqueSelectedLangIds = Array.from(selectedLanguages.keys());
-                const iconsData = await fetchAllIcons(uniqueSelectedLangIds);
+                const iconsData = await fetchAllIcons(uniqueSelectedLangIds, false);
 
-                // Cria um array expandido com base nas quantidades do Map
+                const expandedArray = [];
+                selectedLanguages.forEach((quantity, langId) => {
+                    for (let i = 0; i < quantity; i++) {
+                        expandedArray.push(langId);
+                    }
+                });
+
+                const svgPreview = await generateSheetSVG(0, stickerSize, spacing, shape, maxFit, iconsData, 'cores', expandedArray);
+                previewContainer.innerHTML = svgPreview;
+            } catch (error) {
+                console.error("Erro ao gerar preview:", error);
+                previewContainer.innerHTML = `<div class="text-red-400 text-center">Erro ao gerar preview.</div>`;
+            }
+        }
+
+        async function generateFiles() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+
+            try {
+                const stickerSize = parseInt(document.getElementById('stickerSize').value);
+                const spacing = parseInt(document.getElementById('spacing').value);
+                const shape = document.getElementById('stickerShape').value;
+                const maxFit = calculateMaxFit(stickerSize, spacing);
+
+                const uniqueSelectedLangIds = Array.from(selectedLanguages.keys());
+                const iconsData = await fetchAllIcons(uniqueSelectedLangIds, true);
+
                 const expandedArray = [];
                 selectedLanguages.forEach((quantity, langId) => {
                     for (let i = 0; i < quantity; i++) {
@@ -862,15 +636,12 @@
                 document.getElementById('loadingText').textContent = 'Gerando arquivos DTF UV...';
 
                 for (let sheet = 0; sheet < totalSheets; sheet++) {
-                    // Gerar arquivo CORES (CMYK colorido)
                     const svgCores = await generateSheetSVG(sheet, stickerSize, spacing, shape, maxFit, iconsData, 'cores', expandedArray);
                     downloadFile(`adesivos-CORES-sheet${sheet + 1}-de-${totalSheets}.svg`, svgCores, 'image/svg+xml');
 
-                    // Gerar arquivo BRANCO (White layer - silhuetas brancas)
                     const svgBranco = await generateSheetSVG(sheet, stickerSize, spacing, shape, maxFit, iconsData, 'branco', expandedArray);
                     downloadFile(`adesivos-BRANCO-sheet${sheet + 1}-de-${totalSheets}.svg`, svgBranco, 'image/svg+xml');
 
-                    // Gerar arquivo VERNIZ (Varnish layer - áreas de relevo)
                     const svgVerniz = await generateSheetSVG(sheet, stickerSize, spacing, shape, maxFit, iconsData, 'verniz', expandedArray);
                     downloadFile(`adesivos-VERNIZ-sheet${sheet + 1}-de-${totalSheets}.svg`, svgVerniz, 'image/svg+xml');
                 }
@@ -881,62 +652,51 @@
 
                 alert(`✅ ${totalFiles} arquivo(s) SVG gerado(s)!\n\n📊 ${uniqueIcons} ícone(s) único(s) = ${totalStickers} adesivo(s) no total\n🎨 CORES: Impressão colorida CMYK\n⚪ BRANCO: Camada de tinta branca\n✨ VERNIZ: Camada UV para relevo 3D\n\nEnvie os 3 arquivos para gráfica DTF UV!`);
             } finally {
-                document.getElementById('loadingOverlay').classList.remove('active');
+                overlay.classList.remove('flex');
+                overlay.classList.add('hidden');
             }
         }
 
-        async function fetchAllIcons(selectedArray) {
+        async function fetchAllIcons(selectedArray, showLoading = true) {
             const iconsData = {};
             const total = selectedArray.length;
 
-            console.log('Iniciando download de', total, 'ícones');
-            console.log('IDs únicos selecionados para download:', selectedArray);
+            if (showLoading) {
+                document.getElementById('loadingText').textContent = 'Baixando ícones...';
+            }
 
             for (let i = 0; i < selectedArray.length; i++) {
                 const langId = selectedArray[i];
-                console.log(`Processando [${i + 1}/${total}] langId:`, langId);
-
                 const card = document.querySelector(`[data-langid="${langId}"]`);
-                if (!card) {
-                    console.error('Card não encontrado para langId:', langId);
-                    continue;
-                }
+                if (!card) continue;
 
-                const langDataStr = card.dataset.langData;
-                console.log('langData string:', langDataStr);
-
-                const lang = JSON.parse(langDataStr || '{}');
-                console.log('Lang object:', lang);
-
+                const lang = JSON.parse(card.dataset.langData || '{}');
                 if (!lang.devicon) {
-                    console.error('devicon não encontrado em lang:', lang);
                     iconsData[langId] = { lang, svgText: null };
                     continue;
                 }
 
                 const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
-                console.log('Baixando de:', iconUrl);
 
-                document.getElementById('loadingProgress').textContent = `Baixando ${lang.name} (${i + 1}/${total})...`;
+                if (showLoading) {
+                    document.getElementById('loadingProgress').textContent = `Baixando ${lang.name} (${i + 1}/${total})...`;
+                }
 
                 try {
                     const response = await fetch(iconUrl);
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}`);
-                    }
+                    if (!response.ok) throw new Error(`HTTP ${response.status}`);
                     const svgText = await response.text();
                     iconsData[langId] = { lang, svgText };
-                    console.log(`✓ Ícone ${lang.name} baixado com sucesso (${svgText.length} bytes)`);
                 } catch (error) {
-                    console.error(`✗ Erro ao buscar ícone ${lang.name}:`, error);
+                    console.error(`Erro ao buscar ícone ${lang.name}:`, error);
                     iconsData[langId] = { lang, svgText: null };
                 }
             }
 
-            console.log('Download concluído. iconsData:', iconsData);
-
-            document.getElementById('loadingText').textContent = 'Gerando arquivo SVG...';
-            document.getElementById('loadingProgress').textContent = '';
+            if (showLoading) {
+                document.getElementById('loadingText').textContent = 'Gerando arquivo SVG...';
+                document.getElementById('loadingProgress').textContent = '';
+            }
 
             return iconsData;
         }
@@ -949,7 +709,6 @@
                 const svgElement = svgDoc.querySelector('svg');
                 if (!svgElement) return '';
 
-                // Remove atributos de cor de todos os elementos para permitir a sobreposição
                 svgElement.querySelectorAll('*').forEach(el => {
                     el.removeAttribute('fill');
                     el.removeAttribute('stroke');
@@ -969,7 +728,6 @@
             const cellSize = stickerSize + spacing;
             const cols = Math.floor((a4Width - 2 * margin) / cellSize);
 
-            // Configurações específicas por tipo de camada
             const layerConfig = {
                 cores: {
                     title: `Adesivos CORES (CMYK) - Folha ${sheetIndex + 1}`,
@@ -997,8 +755,6 @@
   <rect width="${a4Width}" height="${a4Height}" fill="${config.bgColor}"/>
 `;
 
-            // Criar <defs> com os ícones para todas as camadas.
-            // Para 'branco' e 'verniz', o conteúdo será sanitizado para remover cores.
             let defs = '\n  <defs>';
             sheetLanguages.forEach((langId) => {
                 const iconData = iconsData[langId];
@@ -1018,7 +774,6 @@
             defs += '\n  </defs>';
             svg += defs;
 
-            // Renderizar cada ícone baseado no tipo de camada
             sheetLanguages.forEach((langId, index) => {
                 const iconData = iconsData[langId];
                 if (!iconData) return;
@@ -1031,19 +786,17 @@
                 const x = margin + (col * cellSize) + (cellSize / 2);
                 const y = margin + (row * cellSize) + (cellSize / 2);
 
-                // Ajuste: o tamanho do ícone deve ser o tamanho do adesivo para a silhueta
                 const iconSize = stickerSize;
                 const iconId = `icon-${langId.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
                 svg += `\n  <g transform="translate(${x}, ${y})">`;
 
                 if (iconData.svgText) {
-                    // Para 'branco' e 'verniz', a cor é forçada para 'white'. Para 'cores', a cor original é mantida.
                     const fillColor = (layerType === 'branco' || layerType === 'verniz') ? 'fill="white"' : '';
                     svg += `\n    <svg x="${-iconSize / 2}" y="${-iconSize / 2}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet">`;
                     svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${fillColor}/>`;
                     svg += `\n    </svg>`;
-                } else { // Fallback para caso o ícone não carregue
+                } else {
                     const fontSize = stickerSize / 8;
                     svg += `\n    <text x="0" y="${fontSize / 3}" text-anchor="middle" font-size="${fontSize}" font-weight="bold" fill="${(layerType === 'cores') ? (lang.color || '#666') : 'white'}">${lang.name}</text>`;
                 }
