@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html class="dark" lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>HardSkills - Gerador de Adesivos DTF UV</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap"
+        rel="stylesheet" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="main-container">
+        <div class="sidebar">
+            <!-- Header -->
+            <div class="header">
+                <h1 class="text-2xl font-bold text-white mb-1">HardSkills</h1>
+                <p class="text-xs text-gray-400">Gerador DTF UV 3D</p>
+            </div>
+
+            <!-- Stats -->
+            <div class="config-section">
+                <div class="grid grid-cols-4 gap-2">
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-400">Únicos</div>
+                        <div id="selectedIcons" class="text-lg font-bold text-primary">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-400">Total</div>
+                        <div id="totalStickers" class="text-lg font-bold text-primary">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-400">P/Folha</div>
+                        <div id="maxFit" class="text-lg font-bold text-primary">48</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="text-xs text-gray-400">Folhas</div>
+                        <div id="sheetsNeeded" class="text-lg font-bold text-primary">0</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Configurações -->
+            <div class="config-section">
+                <h3 class="text-sm font-bold text-gray-300 mb-3">Configurações</h3>
+                <div class="space-y-3">
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Formato da Folha</label>
+                        <div class="select-wrapper">
+                            <select id="paperFormat" onchange="handlePaperFormatChange()">
+                                <option value="210,297" selected>A4 (210x297mm)</option>
+                                <option value="148,210">A5 (148x210mm)</option>
+                                <option value="297,420">A3 (297x420mm)</option>
+                                <option value="216,279">Carta (216x279mm)</option>
+                                <option value="216,356">Ofício (216x356mm)</option>
+                                <option value="custom">Personalizado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="customPaperSize" style="display: none;">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-400 mb-1 block">Largura (mm)</label>
+                                <input type="number" id="customWidth" min="50" max="1000" value="210"
+                                    class="search-input" onchange="updateStats()" placeholder="210">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-400 mb-1 block">Altura (mm)</label>
+                                <input type="number" id="customHeight" min="50" max="1000" value="297"
+                                    class="search-input" onchange="updateStats()" placeholder="297">
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Tamanho Adesivo</label>
+                        <div class="select-wrapper">
+                            <select id="stickerSize" onchange="updateStats()">
+                                <option value="10">10mm</option>
+                                <option value="15">15mm</option>
+                                <option value="20">20mm</option>
+                                <option value="25">25mm</option>
+                                <option value="30" selected>30mm</option>
+                                <option value="35">35mm</option>
+                                <option value="40">40mm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Espaçamento</label>
+                        <div class="select-wrapper">
+                            <select id="spacing" onchange="updateStats()">
+                                <option value="5">5mm</option>
+                                <option value="10" selected>10mm</option>
+                                <option value="15">15mm</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Forma</label>
+                        <div class="select-wrapper">
+                            <select id="stickerShape" onchange="updatePreview()">
+                                <option value="circle" selected>Círculo</option>
+                                <option value="square">Quadrado</option>
+                                <option value="rounded">Arredondado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Fundo do Adesivo</label>
+                        <div class="select-wrapper">
+                            <select id="stickerBackground" onchange="updateStats()">
+                                <option value="transparent" selected>Transparente</option>
+                                <option value="icon_color">Cor do Ícone</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Preview -->
+            <div class="config-section flex-1 flex flex-col">
+                <h3 class="text-sm font-bold text-gray-300 mb-3">Preview (Cores)</h3>
+                <div id="previewContainer" class="preview-box flex-1">
+                    <div class="text-gray-400 text-xs text-center italic">Selecione ícones</div>
+                    <div id="magnifier" class="magnifier-loupe"></div>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="action-panel">
+                <div class="flex flex-col gap-2">
+                    <button id="generateBtn" onclick="generateFiles()" disabled class="btn btn-primary w-full">
+                        Gerar Arquivos DTF UV
+                    </button>
+                    <button onclick="clearSelection()" class="btn btn-secondary w-full">
+                        Limpar Seleção
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-3 text-center">
+                    <span id="selectedCount">0</span> ícones selecionados
+                </p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Search -->
+            <div class="mb-4">
+                <input type="text" id="searchInput" onkeyup="filterLanguages()" class="search-input"
+                    placeholder="🔍 Buscar ícone...">
+            </div>
+
+            <!-- Info Compacto -->
+            <div class="bg-[#1e1933] border border-[#2d2640] rounded-lg p-4 mb-4">
+                <div class="flex items-center gap-2 mb-2">
+                    <span class="text-primary text-lg">ℹ️</span>
+                    <h3 class="text-sm font-bold text-white">DTF UV - Alto Relevo 3D</h3>
+                </div>
+                <p class="text-xs text-gray-400 leading-relaxed">
+                    Gera 3 arquivos por folha: <strong class="text-white">CORES</strong> (CMYK colorido),
+                    <strong class="text-white">BRANCO</strong> (camada base opaca) e
+                    <strong class="text-white">VERNIZ</strong> (relevo UV 3D).
+                    Envie todos para a gráfica DTF UV.
+                </p>
+            </div>
+
+            <!-- Icons Grid -->
+            <div id="languagesContainer"></div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="bg-[#1e1933] border border-[#2d2640] rounded-xl p-8 text-center max-w-sm">
+            <div class="spinner mx-auto mb-4"></div>
+            <h3 id="loadingText" class="text-white text-base font-bold mb-2">Baixando ícones...</h3>
+            <p id="loadingProgress" class="text-gray-400 text-sm"></p>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
