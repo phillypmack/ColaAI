@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(start \"\" \"c:\\Users\\felip\\Downloads\\Aplicações\\Cola\\gerador-adesivos-profissional.html\")",
-      "Bash(node -e:*)"
+      "Bash(node -e:*)",
+      "Bash(start \"\" \"c:\\Users\\felip\\Downloads\\Aplicações\\Cola\\index.html\")"
     ],
     "deny": [],
     "ask": []

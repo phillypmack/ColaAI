@@ -9,6 +9,9 @@ tailwind.config = {
     },
 }
 
+// Estado da visualização (agrupado ou todos)
+let currentView = 'grouped';
+
 const languagesData = {
     "🔥 Top 20": [
         { name: "Python", devicon: "python", color: "#3776ab" },
@@ -442,55 +445,110 @@ function renderLanguages() {
     const container = document.getElementById('languagesContainer');
     container.innerHTML = '';
 
-    for (const [category, languages] of Object.entries(languagesData)) {
-        const categoryDiv = document.createElement('div');
-        categoryDiv.className = 'mb-6';
+    if (currentView === 'grouped') {
+        // Visualização agrupada por categoria
+        for (const [category, languages] of Object.entries(languagesData)) {
+            const categoryDiv = document.createElement('div');
+            categoryDiv.className = 'mb-6';
 
-        categoryDiv.innerHTML = `
-                    <div class="category-header">
-                        <h3 class="text-sm font-bold text-white">${category}</h3>
-                        <div class="flex items-center gap-2">
-                            <span class="text-xs text-gray-400">${languages.length}</span>
-                            <button onclick="selectCategory('${category}', event)" class="btn btn-secondary text-xs py-1 px-3">
-                                Selecionar
-                            </button>
+            categoryDiv.innerHTML = `
+                        <div class="category-header">
+                            <h3 class="text-sm font-bold text-white">${category}</h3>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs text-gray-400">${languages.length}</span>
+                                <button onclick="selectCategory('${category}', event)" class="btn btn-secondary text-xs py-1 px-3">
+                                    Selecionar
+                                </button>
+                            </div>
                         </div>
+                    `;
+
+            const grid = document.createElement('div');
+            grid.className = 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2';
+
+            languages.forEach((lang, index) => {
+                const langId = `${category.replace(/\s/g, '-')}-${index}`;
+                const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
+
+                const card = document.createElement('div');
+                card.className = 'icon-card';
+                card.dataset.name = lang.name.toLowerCase();
+                card.dataset.category = category;
+                card.dataset.langid = langId;
+                card.dataset.langData = JSON.stringify(lang);
+                card.onclick = () => toggleSelection(card, lang);
+
+                card.innerHTML = `
+                            <img src="${iconUrl}" alt="${lang.name}">
+                            <p class="text-white text-xs font-semibold text-center leading-tight">${lang.name}</p>
+                            <div class="quantity-input w-full">
+                                <label class="text-xs text-gray-400">Qtd:</label>
+                                <input type="number" id="qty-${langId}" min="1" value="1"
+                                    onchange="updateIconQuantity('${langId}', this.value)"
+                                    onclick="event.stopPropagation()">
+                            </div>
+                        `;
+
+                grid.appendChild(card);
+            });
+
+            categoryDiv.appendChild(grid);
+            container.appendChild(categoryDiv);
+        }
+    } else {
+        // Visualização de todos os ícones sem categorias
+        const allDiv = document.createElement('div');
+        allDiv.className = 'mb-6';
+
+        // Contar total de ícones
+        const totalIcons = Object.values(languagesData).reduce((sum, langs) => sum + langs.length, 0);
+
+        allDiv.innerHTML = `
+                    <div class="category-header mb-4">
+                        <h3 class="text-sm font-bold text-white">Todos os Modelos</h3>
+                        <span class="text-xs text-gray-400">${totalIcons} ícones</span>
                     </div>
                 `;
 
         const grid = document.createElement('div');
         grid.className = 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2';
 
-        languages.forEach((lang, index) => {
-            const langId = `${category.replace(/\s/g, '-')}-${index}`;
-            const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
+        // Iterar por todas as categorias e adicionar todos os ícones em um único grid
+        let globalIndex = 0;
+        for (const [category, languages] of Object.entries(languagesData)) {
+            languages.forEach((lang, index) => {
+                const langId = `${category.replace(/\s/g, '-')}-${index}`;
+                const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
 
-            const card = document.createElement('div');
-            card.className = 'icon-card';
-            card.dataset.name = lang.name.toLowerCase();
-            card.dataset.category = category;
-            card.dataset.langid = langId;
-            card.dataset.langData = JSON.stringify(lang);
-            card.onclick = () => toggleSelection(card, lang);
+                const card = document.createElement('div');
+                card.className = 'icon-card';
+                card.dataset.name = lang.name.toLowerCase();
+                card.dataset.category = category;
+                card.dataset.langid = langId;
+                card.dataset.langData = JSON.stringify(lang);
+                card.onclick = () => toggleSelection(card, lang);
 
-            card.innerHTML = `
-                        <img src="${iconUrl}" alt="${lang.name}">
-                        <p class="text-white text-xs font-semibold text-center leading-tight">${lang.name}</p>
-                        <div class="quantity-input w-full">
-                            <label class="text-xs text-gray-400">Qtd:</label>
-                            <input type="number" id="qty-${langId}" min="1" value="1"
-                                onchange="updateIconQuantity('${langId}', this.value)"
-                                onclick="event.stopPropagation()">
-                        </div>
-                    `;
+                card.innerHTML = `
+                            <img src="${iconUrl}" alt="${lang.name}">
+                            <p class="text-white text-xs font-semibold text-center leading-tight">${lang.name}</p>
+                            <div class="quantity-input w-full">
+                                <label class="text-xs text-gray-400">Qtd:</label>
+                                <input type="number" id="qty-${langId}" min="1" value="1"
+                                    onchange="updateIconQuantity('${langId}', this.value)"
+                                    onclick="event.stopPropagation()">
+                            </div>
+                        `;
 
-            grid.appendChild(card);
-        });
+                grid.appendChild(card);
+                globalIndex++;
+            });
+        }
 
-        categoryDiv.appendChild(grid);
-        container.appendChild(categoryDiv);
+        allDiv.appendChild(grid);
+        container.appendChild(allDiv);
     }
 
+    // Restaurar seleções
     for (const [langId, quantity] of selectedLanguages.entries()) {
         const card = document.querySelector(`[data-langid="${langId}"]`);
         if (card) {
@@ -568,6 +626,29 @@ function clearSelection() {
     });
     updateStats();
     updatePreview();
+}
+
+function toggleView(view) {
+    currentView = view;
+
+    // Atualizar botões
+    const btnGrouped = document.getElementById('viewGrouped');
+    const btnAll = document.getElementById('viewAll');
+
+    if (view === 'grouped') {
+        btnGrouped.classList.add('bg-primary', 'text-white');
+        btnGrouped.classList.remove('text-gray-400');
+        btnAll.classList.remove('bg-primary', 'text-white');
+        btnAll.classList.add('text-gray-400');
+    } else {
+        btnAll.classList.add('bg-primary', 'text-white');
+        btnAll.classList.remove('text-gray-400');
+        btnGrouped.classList.remove('bg-primary', 'text-white');
+        btnGrouped.classList.add('text-gray-400');
+    }
+
+    // Re-renderizar com a nova visualização
+    renderLanguages();
 }
 
 function updateStats() {
