@@ -920,52 +920,43 @@ function setupMagnifier() {
     const previewContainer = document.getElementById('previewContainer');
     const magnifier = document.getElementById('magnifier');
 
-    previewContainer.addEventListener('mouseenter', (e) => {
-        if (selectedLanguages.size === 0) return;
-        previewContainer.classList.add('zooming');
-        magnifier.style.display = 'block';
-    });
-
-    previewContainer.addEventListener('mouseleave', () => {
-        previewContainer.classList.remove('zooming');
-        magnifier.style.display = 'none';
-    });
-
-    previewContainer.addEventListener('mousemove', (e) => {
-        if (selectedLanguages.size === 0) return;
-
-        const rect = previewContainer.getBoundingClientRect();
-
-        // Verifica se o cursor está realmente dentro dos limites do container do preview
-        if (e.clientX < rect.left || e.clientX > rect.right || e.clientY < rect.top || e.clientY > rect.bottom) {
+    document.addEventListener('mousemove', (e) => {
+        if (selectedLanguages.size === 0) {
             magnifier.style.display = 'none';
             return;
         }
 
+        const rect = previewContainer.getBoundingClientRect();
+        const isMouseOverPreview = e.clientX >= rect.left && e.clientX <= rect.right && e.clientY >= rect.top && e.clientY <= rect.bottom;
+
+        if (!isMouseOverPreview) {
+            magnifier.style.display = 'none';
+            previewContainer.classList.remove('zooming');
+            return;
+        }
+
+        magnifier.style.display = 'block';
+        previewContainer.classList.add('zooming');
+
         // --- Lógica de Zoom Dinâmico ---
         const stickerSize = parseInt(document.getElementById('stickerSize').value);
-        // Mapeia o tamanho do adesivo (10mm a 40mm) para um nível de zoom (4.5x a 1.5x)
         const minStickerSize = 10;
         const maxStickerSize = 40;
         const minZoom = 1.5;
         const maxZoom = 4.5;
-        // Fórmula de interpolação linear inversa
         const zoomLevel = maxZoom - ((stickerSize - minStickerSize) * (maxZoom - minZoom)) / (maxStickerSize - minStickerSize);
         // --- Fim da Lógica de Zoom ---
 
         const svgElement = previewContainer.querySelector('svg');
         if (!svgElement) return;
 
-        const x = e.clientX - rect.left; // Posição X do mouse dentro do container
-        const y = e.clientY - rect.top;  // Posição Y do mouse dentro do container
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
 
-        // Position the loupe
         magnifier.style.left = `${x - magnifier.offsetWidth / 2}px`;
         magnifier.style.top = `${y - magnifier.offsetHeight / 2}px`;
 
-        // Set background properties for zoom effect
         const svgUrl = `url("data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgElement.outerHTML)}")`;
-
         magnifier.style.backgroundImage = svgUrl;
         magnifier.style.backgroundSize = `${rect.width * zoomLevel}px ${rect.height * zoomLevel}px`;
 
