@@ -838,6 +838,23 @@
             return iconsData;
         }
 
+        function getSanitizedSvgContent(svgText) {
+            if (!svgText) return '';
+            try {
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(svgText, 'image/svg+xml');
+                const svgElement = svgDoc.querySelector('svg');
+                if (!svgElement) return '';
+
+                // Remove atributos de cor de todos os elementos para permitir a sobreposição
+                svgElement.querySelectorAll('*').forEach(el => {
+                    el.removeAttribute('fill');
+                    el.removeAttribute('stroke');
+                });
+                return svgElement.innerHTML;
+            } catch (e) { return ''; }
+        }
+
         function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, iconsData, layerType = 'cores', expandedArray) {
             const start = sheetIndex * maxFit;
             const end = Math.min(start + maxFit, expandedArray.length);
@@ -877,31 +894,26 @@
   <rect width="${a4Width}" height="${a4Height}" fill="${config.bgColor}"/>
 `;
 
-            // Para camada CORES, incluir os ícones SVG coloridos
-            if (layerType === 'cores') {
-                let defs = '\n  <defs>';
-                sheetLanguages.forEach((langId, index) => {
-                    const iconData = iconsData[langId];
-                    if (!iconData || !iconData.svgText) return;
+            // Criar <defs> com os ícones para todas as camadas.
+            // Para 'branco' e 'verniz', o conteúdo será sanitizado para remover cores.
+            let defs = '\n  <defs>';
+            sheetLanguages.forEach((langId) => {
+                const iconData = iconsData[langId];
+                if (!iconData || !iconData.svgText) return;
 
-                    try {
-                        const parser = new DOMParser();
-                        const svgDoc = parser.parseFromString(iconData.svgText, 'image/svg+xml');
-                        const svgElement = svgDoc.querySelector('svg');
+                const parser = new DOMParser();
+                const svgDoc = parser.parseFromString(iconData.svgText, 'image/svg+xml');
+                const svgElement = svgDoc.querySelector('svg');
 
-                        if (svgElement) {
-                            const viewBox = svgElement.getAttribute('viewBox') || '0 0 128 128';
-                            const innerHTML = svgElement.innerHTML;
-                            const iconId = langId.replace(/[^a-zA-Z0-9]/g, '-');
-                            defs += `\n    <symbol id="icon-${iconId}" viewBox="${viewBox}">${innerHTML}</symbol>`;
-                        }
-                    } catch (error) {
-                        console.error('Erro ao processar SVG de', iconData?.lang?.name, error);
-                    }
-                });
-                defs += '\n  </defs>';
-                svg += defs;
-            }
+                if (svgElement) {
+                    const viewBox = svgElement.getAttribute('viewBox') || '0 0 128 128';
+                    const innerHTML = (layerType === 'cores') ? svgElement.innerHTML : getSanitizedSvgContent(iconData.svgText);
+                    const iconId = langId.replace(/[^a-zA-Z0-9]/g, '-');
+                    defs += `\n    <symbol id="icon-${iconId}" viewBox="${viewBox}">${innerHTML}</symbol>`;
+                }
+            });
+            defs += '\n  </defs>';
+            svg += defs;
 
             // Renderizar cada ícone baseado no tipo de camada
             sheetLanguages.forEach((langId, index) => {
@@ -916,31 +928,21 @@
                 const x = margin + (col * cellSize) + (cellSize / 2);
                 const y = margin + (row * cellSize) + (cellSize / 2);
 
-                const iconSize = stickerSize * 0.65;
+                // Ajuste: o tamanho do ícone deve ser o tamanho do adesivo para a silhueta
+                const iconSize = stickerSize;
                 const iconId = `icon-${langId.replace(/[^a-zA-Z0-9]/g, '-')}`;
 
                 svg += `\n  <g transform="translate(${x}, ${y})">`;
 
-                if (layerType === 'cores') {
-                    // CAMADA CORES: Ícones coloridos normais
-                    if (iconData.svgText) {
-                        svg += `\n    <svg x="${-iconSize / 2}" y="${-iconSize / 2}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet">`;
-                        svg += `\n      <use href="#${iconId}" width="100%" height="100%"/>`;
-                        svg += `\n    </svg>`;
-                    } else {
-                        const fontSize = stickerSize / 8;
-                        svg += `\n    <text x="0" y="${fontSize / 3}" text-anchor="middle" font-size="${fontSize}" font-weight="bold" fill="${lang.color || '#666'}">${lang.name}</text>`;
-                    }
-                } else if (layerType === 'branco' || layerType === 'verniz') {
-                    // CAMADAS BRANCO e VERNIZ: Silhueta branca sólida em fundo preto
-                    // Usa a forma do adesivo (círculo, quadrado, etc)
-                    if (shape === 'circle') {
-                        svg += `\n    <circle cx="0" cy="0" r="${stickerSize / 2}" fill="white"/>`;
-                    } else if (shape === 'square') {
-                        svg += `\n    <rect x="${-stickerSize / 2}" y="${-stickerSize / 2}" width="${stickerSize}" height="${stickerSize}" fill="white"/>`;
-                    } else {
-                        svg += `\n    <rect x="${-stickerSize / 2}" y="${-stickerSize / 2}" width="${stickerSize}" height="${stickerSize}" rx="${stickerSize / 10}" fill="white"/>`;
-                    }
+                if (iconData.svgText) {
+                    // Para 'branco' e 'verniz', a cor é forçada para 'white'. Para 'cores', a cor original é mantida.
+                    const fillColor = (layerType === 'branco' || layerType === 'verniz') ? 'fill="white"' : '';
+                    svg += `\n    <svg x="${-iconSize / 2}" y="${-iconSize / 2}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet">`;
+                    svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${fillColor}/>`;
+                    svg += `\n    </svg>`;
+                } else { // Fallback para caso o ícone não carregue
+                    const fontSize = stickerSize / 8;
+                    svg += `\n    <text x="0" y="${fontSize / 3}" text-anchor="middle" font-size="${fontSize}" font-weight="bold" fill="${(layerType === 'cores') ? (lang.color || '#666') : 'white'}">${lang.name}</text>`;
                 }
 
                 svg += `\n  </g>`;
@@ -963,6 +965,7 @@
         }
 
         window.addEventListener('DOMContentLoaded', renderLanguages);
+        window.addEventListener('DOMContentLoaded', updateStats);
     </script>
 </body>
 
