@@ -70,19 +70,19 @@
                             <div>
                                 <label class="text-xs text-gray-400 mb-1 block">Largura (mm)</label>
                                 <input type="number" id="customWidth" min="50" max="1000" value="210"
-                                    class="search-input" onchange="updateStats()" placeholder="210">
+                                    class="search-input" onchange="updateStatsAndPreview()" placeholder="210">
                             </div>
                             <div>
                                 <label class="text-xs text-gray-400 mb-1 block">Altura (mm)</label>
                                 <input type="number" id="customHeight" min="50" max="1000" value="297"
-                                    class="search-input" onchange="updateStats()" placeholder="297">
+                                    class="search-input" onchange="updateStatsAndPreview()" placeholder="297">
                             </div>
                         </div>
                     </div>
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Tamanho Adesivo</label>
                         <div class="select-wrapper">
-                            <select id="stickerSize" onchange="updateStats()">
+                            <select id="stickerSize" onchange="updateStatsAndPreview()">
                                 <option value="10">10mm</option>
                                 <option value="15">15mm</option>
                                 <option value="20">20mm</option>
@@ -96,7 +96,7 @@
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Espaçamento</label>
                         <div class="select-wrapper">
-                            <select id="spacing" onchange="updateStats()">
+                            <select id="spacing" onchange="updateStatsAndPreview()">
                                 <option value="5">5mm</option>
                                 <option value="10" selected>10mm</option>
                                 <option value="15">15mm</option>
@@ -116,7 +116,7 @@
                     <div>
                         <label class="text-xs text-gray-400 mb-1 block">Fundo do Adesivo</label>
                         <div class="select-wrapper">
-                            <select id="stickerBackground" onchange="updateStats()">
+                            <select id="stickerBackground" onchange="updateStatsAndPreview()">
                                 <option value="transparent" selected>Transparente</option>
                                 <option value="icon_color">Cor do Ícone</option>
                                 <option value="white">Branco</option>

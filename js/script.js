@@ -840,6 +840,14 @@ function getOutlineFilter(iconColor, outlineStyle) {
     }
 }
 
+/**
+ * Atualiza estatísticas e preview simultaneamente
+ */
+function updateStatsAndPreview() {
+    updateStats();
+    updatePreview();
+}
+
 function updateStats() {
     const count = selectedLanguages.size;
     let totalStickers = 0;
@@ -885,8 +893,7 @@ function handlePaperFormatChange() {
         customDiv.style.display = 'none';
     }
 
-    updateStats();
-    updatePreview();
+    updateStatsAndPreview();
 }
 
 function calculateMaxFit(stickerSize, spacing) {
