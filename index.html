@@ -119,6 +119,25 @@
                             <select id="stickerBackground" onchange="updateStats()">
                                 <option value="transparent" selected>Transparente</option>
                                 <option value="icon_color">Cor do Ícone</option>
+                                <option value="white">Branco</option>
+                                <option value="black">Preto</option>
+                                <option value="auto_contrast">Contraste Automático</option>
+                                <option value="complementary">Cor Complementar</option>
+                                <option value="light_pastel">Pastel Claro</option>
+                                <option value="dark_vibrant">Escuro Vibrante</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400 mb-1 block">Contorno</label>
+                        <div class="select-wrapper">
+                            <select id="outlineStyle" onchange="updatePreview()">
+                                <option value="none" selected>Sem Contorno</option>
+                                <option value="auto">Automático (Contraste)</option>
+                                <option value="double">Duplo (Preto + Branco)</option>
+                                <option value="white">Branco</option>
+                                <option value="black">Preto</option>
+                                <option value="complementary">Complementar</option>
                             </select>
                         </div>
                     </div>

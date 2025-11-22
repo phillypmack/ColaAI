@@ -110,7 +110,7 @@ const languagesData = {
         { name: "Arch Linux", devicon: "archlinux", color: "#1793d1" },
         { name: "CentOS", devicon: "centos", color: "#212429" },
         { name: "Kali Linux", devicon: "kalilinux", color: "#557c94" },
-        { name: "Manjaro", devicon: "manjaro", color: "#35bf5c" },
+        { name: "Linux Mint", devicon: "linuxmint", color: "#87cf3e" },
         { name: "Raspberry Pi", devicon: "raspberrypi", color: "#c51a4a" },
         { name: "Red Hat", devicon: "redhat", color: "#ee0000" }
     ],
@@ -436,6 +436,19 @@ const languagesData = {
         { name: "OpenBSD", devicon: "openbsd", color: "#f2ca30" },
         { name: "Android OS", devicon: "android", color: "#3ddc84" },
         { name: "iOS", devicon: "apple", color: "#000000" }
+    ],
+    "🤖 Inteligência Artificial": [
+        { name: "ChatGPT", icon: "openai", color: "#412991", source: "simpleicons" },
+        { name: "Claude AI", icon: "anthropic", color: "#CC9B7A", source: "simpleicons" },
+        { name: "Google Gemini", icon: "googlegemini", color: "#8E75B2", source: "simpleicons" },
+        { name: "Microsoft Copilot", icon: "microsoftcopilot", color: "#44A8F2", source: "simpleicons" },
+        { name: "Midjourney", icon: "midjourney", color: "#000000", source: "simpleicons" },
+        { name: "Hugging Face", icon: "huggingface", color: "#FFD21E", source: "simpleicons" },
+        { name: "Stability AI", icon: "stabilityai", color: "#000000", source: "simpleicons" },
+        { name: "Perplexity AI", icon: "perplexity", color: "#20808D", source: "simpleicons" },
+        { name: "TensorFlow", devicon: "tensorflow", color: "#ff6f00" },
+        { name: "PyTorch", devicon: "pytorch", color: "#ee4c2c" },
+        { name: "Keras", devicon: "keras", color: "#d00000" }
     ]
 };
 
@@ -468,7 +481,17 @@ function renderLanguages() {
 
             languages.forEach((lang, index) => {
                 const langId = `${category.replace(/\s/g, '-')}-${index}`;
-                const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
+
+                // Suporta múltiplas fontes de ícones
+                let iconUrl;
+                if (lang.source === 'simpleicons') {
+                    // Simple Icons CDN com suporte a cores
+                    const color = lang.color ? lang.color.replace('#', '') : '';
+                    iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+                } else {
+                    const iconName = lang.devicon || lang.icon;
+                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-original.svg`;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'icon-card';
@@ -518,7 +541,17 @@ function renderLanguages() {
         for (const [category, languages] of Object.entries(languagesData)) {
             languages.forEach((lang, index) => {
                 const langId = `${category.replace(/\s/g, '-')}-${index}`;
-                const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
+
+                // Suporta múltiplas fontes de ícones
+                let iconUrl;
+                if (lang.source === 'simpleicons') {
+                    // Simple Icons CDN com suporte a cores
+                    const color = lang.color ? lang.color.replace('#', '') : '';
+                    iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+                } else {
+                    const iconName = lang.devicon || lang.icon;
+                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-original.svg`;
+                }
 
                 const card = document.createElement('div');
                 card.className = 'icon-card';
@@ -649,6 +682,162 @@ function toggleView(view) {
 
     // Re-renderizar com a nova visualização
     renderLanguages();
+}
+
+// =====================================================
+// ESTRATÉGIAS DE COR E CONTORNO
+// =====================================================
+
+/**
+ * Calcula a luminosidade de uma cor hex
+ * @param {string} hexColor - Cor em formato hex (#RRGGBB)
+ * @returns {number} - Luminosidade entre 0 e 1
+ */
+function getColorLuminance(hexColor) {
+    if (!hexColor || hexColor === 'transparent') return 0.5;
+
+    const hex = hexColor.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+
+    // Fórmula de percepção humana
+    return (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+}
+
+/**
+ * Retorna cor de contraste baseada em luminosidade
+ * @param {string} hexColor - Cor base
+ * @returns {string} - Cor de contraste (preto ou branco)
+ */
+function getContrastColor(hexColor) {
+    const luminance = getColorLuminance(hexColor);
+    return luminance > 0.5 ? '#000000' : '#FFFFFF';
+}
+
+/**
+ * Calcula a cor complementar
+ * @param {string} hexColor - Cor base
+ * @returns {string} - Cor complementar
+ */
+function getComplementaryColor(hexColor) {
+    if (!hexColor || hexColor === 'transparent') return '#FFFFFF';
+
+    const hex = hexColor.replace('#', '');
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+
+    // Inverte cada componente
+    r = (255 - r).toString(16).padStart(2, '0');
+    g = (255 - g).toString(16).padStart(2, '0');
+    b = (255 - b).toString(16).padStart(2, '0');
+
+    return `#${r}${g}${b}`;
+}
+
+/**
+ * Converte cor para versão pastel clara
+ * @param {string} hexColor - Cor base
+ * @returns {string} - Cor pastel
+ */
+function getPastelColor(hexColor) {
+    if (!hexColor || hexColor === 'transparent') return '#F0F0F0';
+
+    const hex = hexColor.replace('#', '');
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+
+    // Clareia a cor misturando com branco (60% da cor + 40% branco)
+    r = Math.round(r * 0.6 + 255 * 0.4).toString(16).padStart(2, '0');
+    g = Math.round(g * 0.6 + 255 * 0.4).toString(16).padStart(2, '0');
+    b = Math.round(b * 0.6 + 255 * 0.4).toString(16).padStart(2, '0');
+
+    return `#${r}${g}${b}`;
+}
+
+/**
+ * Converte cor para versão escura vibrante
+ * @param {string} hexColor - Cor base
+ * @returns {string} - Cor escura vibrante
+ */
+function getDarkVibrantColor(hexColor) {
+    if (!hexColor || hexColor === 'transparent') return '#1A1A1A';
+
+    const hex = hexColor.replace('#', '');
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+
+    // Escurece para 40% do original
+    const factor = 0.4;
+
+    r = Math.round(r * factor).toString(16).padStart(2, '0');
+    g = Math.round(g * factor).toString(16).padStart(2, '0');
+    b = Math.round(b * factor).toString(16).padStart(2, '0');
+
+    return `#${r}${g}${b}`;
+}
+
+/**
+ * Calcula a cor de fundo baseada na estratégia selecionada
+ * @param {string} iconColor - Cor original do ícone
+ * @param {string} strategy - Estratégia de fundo
+ * @returns {string} - Cor de fundo calculada
+ */
+function getBackgroundColor(iconColor, strategy) {
+    switch (strategy) {
+        case 'transparent':
+            return 'transparent';
+        case 'icon_color':
+            return iconColor;
+        case 'white':
+            return '#FFFFFF';
+        case 'black':
+            return '#000000';
+        case 'auto_contrast':
+            return getContrastColor(iconColor);
+        case 'complementary':
+            return getComplementaryColor(iconColor);
+        case 'light_pastel':
+            return getPastelColor(iconColor);
+        case 'dark_vibrant':
+            return getDarkVibrantColor(iconColor);
+        default:
+            return 'transparent';
+    }
+}
+
+/**
+ * Gera o filtro CSS para contorno baseado na estratégia
+ * @param {string} iconColor - Cor do ícone
+ * @param {string} outlineStyle - Estilo de contorno
+ * @returns {string} - String de filtro CSS
+ */
+function getOutlineFilter(iconColor, outlineStyle) {
+    switch (outlineStyle) {
+        case 'none':
+            return '';
+        case 'auto':
+            const contrastColor = getContrastColor(iconColor);
+            const rgb = contrastColor === '#FFFFFF' ? '255, 255, 255' : '0, 0, 0';
+            return `drop-shadow(0 0 2px rgba(${rgb}, 0.8))`;
+        case 'double':
+            return `drop-shadow(0 0 3px rgba(0, 0, 0, 0.8)) drop-shadow(0 0 1px rgba(255, 255, 255, 0.9))`;
+        case 'white':
+            return `drop-shadow(0 0 2px rgba(255, 255, 255, 0.9))`;
+        case 'black':
+            return `drop-shadow(0 0 2px rgba(0, 0, 0, 0.9))`;
+        case 'complementary':
+            const compColor = getComplementaryColor(iconColor).replace('#', '');
+            const r = parseInt(compColor.substring(0, 2), 16);
+            const g = parseInt(compColor.substring(2, 4), 16);
+            const b = parseInt(compColor.substring(4, 6), 16);
+            return `drop-shadow(0 0 2px rgba(${r}, ${g}, ${b}, 0.8))`;
+        default:
+            return '';
+    }
 }
 
 function updateStats() {
@@ -836,12 +1025,21 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
         if (!card) continue;
 
         const lang = JSON.parse(card.dataset.langData || '{}');
-        if (!lang.devicon) {
+        if (!lang.devicon && !lang.icon) {
             iconsData[langId] = { lang, svgText: null };
             continue;
         }
 
-        const iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${lang.devicon}/${lang.devicon}-original.svg`;
+        // Suporta múltiplas fontes de ícones
+        let iconUrl;
+        if (lang.source === 'simpleicons') {
+            // Simple Icons CDN com suporte a cores
+            const color = lang.color ? lang.color.replace('#', '') : '';
+            iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+        } else {
+            const iconName = lang.devicon || lang.icon;
+            iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-original.svg`;
+        }
 
         if (showLoading) {
             document.getElementById('loadingProgress').textContent = `${lang.name} (${i + 1}/${total})`;
@@ -920,6 +1118,42 @@ function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, icons
 `;
 
     let defs = '\n  <defs>';
+
+    // Adicionar filtros de contorno SVG
+    const outlineStyle = document.getElementById('outlineStyle')?.value || 'none';
+    if (layerType === 'cores' && outlineStyle !== 'none') {
+        defs += `\n    <filter id="outline-auto">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
+      <feFlood flood-color="black" flood-opacity="0.8" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+
+        defs += `\n    <filter id="outline-double">
+      <feMorphology in="SourceAlpha" result="dilated1" operator="dilate" radius="2"/>
+      <feFlood flood-color="black" flood-opacity="0.8" result="black"/>
+      <feComposite in="black" in2="dilated1" operator="in" result="outline1"/>
+      <feMorphology in="SourceAlpha" result="dilated2" operator="dilate" radius="1"/>
+      <feFlood flood-color="white" flood-opacity="0.9" result="white"/>
+      <feComposite in="white" in2="dilated2" operator="in" result="outline2"/>
+      <feMerge><feMergeNode in="outline1"/><feMergeNode in="outline2"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+
+        defs += `\n    <filter id="outline-white">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
+      <feFlood flood-color="white" flood-opacity="0.9" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+
+        defs += `\n    <filter id="outline-black">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
+      <feFlood flood-color="black" flood-opacity="0.9" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+    }
+
     sheetLanguages.forEach((langId) => {
         const iconData = iconsData[langId];
         if (!iconData || !iconData.svgText) return;
@@ -955,9 +1189,12 @@ function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, icons
 
         svg += `\n  <g transform="translate(${x}, ${y})">`;
 
+        // Aplicar estratégias de fundo
         const stickerBackground = document.getElementById('stickerBackground').value;
-        if (layerType === 'cores' && stickerBackground === 'icon_color') {
-            const bgColor = lang.color || '#cccccc'; // Cor padrão cinza se não houver cor
+        const iconColor = lang.color || '#cccccc';
+
+        if (layerType === 'cores' && stickerBackground !== 'transparent') {
+            const bgColor = getBackgroundColor(iconColor, stickerBackground);
             const bgSize = stickerSize;
             const borderRadius = (shape === 'rounded') ? bgSize * 0.15 : 0;
 
@@ -970,8 +1207,16 @@ function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, icons
 
         if (iconData.svgText) {
             const fillColor = (layerType === 'branco' || layerType === 'verniz') ? 'fill="white"' : '';
+
+            // Aplicar filtro de contorno
+            let filterAttr = '';
+            const outlineStyle = document.getElementById('outlineStyle')?.value || 'none';
+            if (layerType === 'cores' && outlineStyle !== 'none' && outlineStyle !== 'complementary') {
+                filterAttr = `filter="url(#outline-${outlineStyle})"`;
+            }
+
             svg += `\n    <svg x="${-iconSize / 2}" y="${-iconSize / 2}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet">`;
-            svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${fillColor}/>`;
+            svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${fillColor} ${filterAttr}/>`;
             svg += `\n    </svg>`;
         } else {
             const fontSize = stickerSize / 8;
