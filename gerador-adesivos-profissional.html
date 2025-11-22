@@ -149,15 +149,10 @@
         }
 
         .layout-options {
-            display: grid;
+            display: flex;
+            /* Changed to flex for better alignment after removing one option */
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 15px;
-        }
-
-        .layout-option {
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
 
         .layout-option label {
@@ -172,6 +167,19 @@
             border: 2px solid #ddd;
             border-radius: 8px;
             font-size: 1em;
+        }
+
+        .layout-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
 
         .category {
@@ -329,6 +337,15 @@
             color: #667eea;
         }
 
+        .quantity-selector input {
+            width: 60px;
+            text-align: center;
+            padding: 5px;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
         .search-box {
             margin-bottom: 20px;
         }
@@ -454,19 +471,6 @@
                         <option value="rounded">Arredondado</option>
                     </select>
                 </div>
-                <div class="layout-option">
-                    <label>Cópias de cada ícone:</label>
-                    <select id="copiesPerIcon" onchange="updateStats()">
-                        <option value="1" selected>1 cópia</option>
-                        <option value="2">2 cópias</option>
-                        <option value="3">3 cópias</option>
-                        <option value="4">4 cópias</option>
-                        <option value="5">5 cópias</option>
-                        <option value="10">10 cópias</option>
-                        <option value="20">20 cópias</option>
-                        <option value="50">50 cópias</option>
-                    </select>
-                </div>
             </div>
         </div>
 
@@ -544,7 +548,7 @@
             ]
         };
 
-        let selectedLanguages = new Set();
+        let selectedLanguages = new Map(); // Usa Map para armazenar { langId: quantity }
 
         function renderLanguages() {
             const container = document.getElementById('languagesContainer');
@@ -574,7 +578,8 @@
                     card.className = 'language-card';
                     card.dataset.name = lang.name.toLowerCase();
                     card.dataset.category = category;
-                    card.dataset.langid = `${category}-${index}`;
+                    const langId = `${category.replace(/\s/g, '-')}-${index}`; // ID único e seguro
+                    card.dataset.langid = langId;
                     card.dataset.langData = JSON.stringify(lang);
                     card.onclick = () => toggleSelection(card, lang);
 
@@ -586,6 +591,12 @@
                             <img src="${iconUrl}" alt="${lang.name}">
                         </div>
                         <div class="language-name">${lang.name}</div>
+                        <div class="quantity-selector" style="display: none; margin-top: 10px;">
+                            <label for="qty-${langId}">Qtd:</label> 
+                            <input type="number" id="qty-${langId}" min="1" value="1" 
+                                onchange="updateIconQuantity('${langId}', this.value)" 
+                                onclick="event.stopPropagation()"> 
+                        </div>
                     `;
 
                     grid.appendChild(card);
@@ -595,18 +606,50 @@
                 container.appendChild(categoryDiv);
             }
 
+            // Re-apply selection state and quantities if page was re-rendered
+            for (const [langId, quantity] of selectedLanguages.entries()) {
+                const card = document.querySelector(`[data-langid="${langId}"]`);
+                if (card) {
+                    card.classList.add('selected');
+                    const qtySelector = card.querySelector('.quantity-selector');
+                    if (qtySelector) qtySelector.style.display = 'flex'; // 'flex' para centralizar
+                    const qtyInput = card.querySelector(`#qty-${langId}`);
+                    if (qtyInput) qtyInput.value = quantity;
+                }
+            }
+
             updateStats();
         }
 
         function toggleSelection(card, lang) {
             const langId = card.dataset.langid;
 
-            if (selectedLanguages.has(langId)) {
+            const qtySelector = card.querySelector('.quantity-selector');
+            const qtyInput = card.querySelector(`#qty-${langId}`);
+
+            if (selectedLanguages.has(langId)) { // If already selected, deselect it
                 selectedLanguages.delete(langId);
                 card.classList.remove('selected');
-            } else {
-                selectedLanguages.add(langId);
+                if (qtySelector) qtySelector.style.display = 'none';
+                if (qtyInput) qtyInput.value = 1;
+            } else { // If not selected, select it
+                selectedLanguages.set(langId, 1);
                 card.classList.add('selected');
+                if (qtySelector) qtySelector.style.display = 'flex';
+                if (qtyInput) qtyInput.value = 1; // Set quantity to 1
+            }
+
+            updateStats();
+        }
+
+        function updateIconQuantity(langId, quantity) {
+            if (selectedLanguages.has(langId)) {
+                const qty = parseInt(quantity);
+                if (qty > 0) {
+                    selectedLanguages.set(langId, qty);
+                } else { // Se a quantidade for 0 ou menos, remove a seleção
+                    document.querySelector(`[data-langid="${langId}"]`).click();
+                }
             }
 
             updateStats();
@@ -619,12 +662,19 @@
 
             cards.forEach(card => {
                 const langId = card.dataset.langid;
+                const qtySelector = card.querySelector('.quantity-selector');
+                const qtyInput = card.querySelector(`#qty-${langId}`);
+
                 if (allSelected) {
                     selectedLanguages.delete(langId);
                     card.classList.remove('selected');
+                    if (qtySelector) qtySelector.style.display = 'none';
+                    if (qtyInput) qtyInput.value = 1;
                 } else {
-                    selectedLanguages.add(langId);
+                    selectedLanguages.set(langId, 1);
                     card.classList.add('selected');
+                    if (qtySelector) qtySelector.style.display = 'flex';
+                    if (qtyInput) qtyInput.value = 1;
                 }
             });
 
@@ -635,14 +685,21 @@
             selectedLanguages.clear();
             document.querySelectorAll('.language-card').forEach(card => {
                 card.classList.remove('selected');
+                const qtySelector = card.querySelector('.quantity-selector');
+                if (qtySelector) qtySelector.style.display = 'none';
+                const qtyInput = card.querySelector(`input[type="number"]`);
+                if (qtyInput) qtyInput.value = 1;
             });
             updateStats();
         }
 
         function updateStats() {
             const count = selectedLanguages.size;
-            const copiesPerIcon = parseInt(document.getElementById('copiesPerIcon').value);
-            const totalStickers = count * copiesPerIcon;
+            let totalStickers = 0;
+            // Sum quantities from the map
+            selectedLanguages.forEach(quantity => {
+                totalStickers += quantity;
+            });
 
             document.getElementById('selectedCount').textContent = count;
             document.getElementById('selectedIcons').textContent = count;
@@ -685,20 +742,18 @@
                 const stickerSize = parseInt(document.getElementById('stickerSize').value);
                 const spacing = parseInt(document.getElementById('spacing').value);
                 const shape = document.getElementById('stickerShape').value;
-                const copiesPerIcon = parseInt(document.getElementById('copiesPerIcon').value);
                 const maxFit = calculateMaxFit(stickerSize, spacing);
 
-                const selectedArray = Array.from(selectedLanguages);
-                const iconsData = await fetchAllIcons(selectedArray);
+                const uniqueSelectedLangIds = Array.from(selectedLanguages.keys());
+                const iconsData = await fetchAllIcons(uniqueSelectedLangIds);
 
-                // Criar array expandido com as cópias
+                // Cria um array expandido com base nas quantidades do Map
                 const expandedArray = [];
-                selectedArray.forEach(langId => {
-                    for (let i = 0; i < copiesPerIcon; i++) {
+                selectedLanguages.forEach((quantity, langId) => {
+                    for (let i = 0; i < quantity; i++) {
                         expandedArray.push(langId);
                     }
                 });
-
                 const totalSheets = Math.ceil(expandedArray.length / maxFit);
 
                 document.getElementById('loadingText').textContent = 'Gerando arquivos DTF UV...';
@@ -718,10 +773,10 @@
                 }
 
                 const totalFiles = totalSheets * 3;
-                const uniqueIcons = selectedArray.length;
+                const uniqueIcons = selectedLanguages.size;
                 const totalStickers = expandedArray.length;
 
-                alert(`✅ ${totalFiles} arquivo(s) SVG gerado(s)!\n\n📊 ${uniqueIcons} ícone(s) único(s) × ${copiesPerIcon} cópia(s) = ${totalStickers} adesivo(s)\n🎨 CORES: Impressão colorida CMYK\n⚪ BRANCO: Camada de tinta branca\n✨ VERNIZ: Camada UV para relevo 3D\n\nEnvie os 3 arquivos para gráfica DTF UV!`);
+                alert(`✅ ${totalFiles} arquivo(s) SVG gerado(s)!\n\n📊 ${uniqueIcons} ícone(s) único(s) = ${totalStickers} adesivo(s) no total\n🎨 CORES: Impressão colorida CMYK\n⚪ BRANCO: Camada de tinta branca\n✨ VERNIZ: Camada UV para relevo 3D\n\nEnvie os 3 arquivos para gráfica DTF UV!`);
             } finally {
                 document.getElementById('loadingOverlay').classList.remove('active');
             }
@@ -732,7 +787,7 @@
             const total = selectedArray.length;
 
             console.log('Iniciando download de', total, 'ícones');
-            console.log('IDs selecionados:', selectedArray);
+            console.log('IDs únicos selecionados para download:', selectedArray);
 
             for (let i = 0; i < selectedArray.length; i++) {
                 const langId = selectedArray[i];
