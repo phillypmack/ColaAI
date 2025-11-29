@@ -110,7 +110,7 @@ const languagesData = {
         { name: "Arch Linux", devicon: "archlinux", color: "#1793d1" },
         { name: "CentOS", devicon: "centos", color: "#212429" },
         { name: "Kali Linux", devicon: "kalilinux", color: "#557c94" },
-        { name: "Linux Mint", devicon: "linuxmint", color: "#87cf3e" },
+        { name: "Manjaro", devicon: "manjaro", color: "#35bf5c" },
         { name: "Raspberry Pi", devicon: "raspberrypi", color: "#c51a4a" },
         { name: "Red Hat", devicon: "redhat", color: "#ee0000" }
     ],
@@ -483,14 +483,15 @@ function renderLanguages() {
                 const langId = `${category.replace(/\s/g, '-')}-${index}`;
 
                 // Suporta múltiplas fontes de ícones
+                const iconName = lang.devicon || lang.icon;
+                const variant = lang.variant || 'original';
                 let iconUrl;
                 if (lang.source === 'simpleicons') {
                     // Simple Icons CDN com suporte a cores
                     const color = lang.color ? lang.color.replace('#', '') : '';
                     iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
                 } else {
-                    const iconName = lang.devicon || lang.icon;
-                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-original.svg`;
+                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
                 }
 
                 const card = document.createElement('div');
@@ -543,14 +544,15 @@ function renderLanguages() {
                 const langId = `${category.replace(/\s/g, '-')}-${index}`;
 
                 // Suporta múltiplas fontes de ícones
+                const iconName = lang.devicon || lang.icon;
+                const variant = lang.variant || 'original';
                 let iconUrl;
                 if (lang.source === 'simpleicons') {
                     // Simple Icons CDN com suporte a cores
                     const color = lang.color ? lang.color.replace('#', '') : '';
                     iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
                 } else {
-                    const iconName = lang.devicon || lang.icon;
-                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-original.svg`;
+                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
                 }
 
                 const card = document.createElement('div');
@@ -1038,14 +1040,15 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
         }
 
         // Suporta múltiplas fontes de ícones
+        const iconName = lang.devicon || lang.icon;
+        const variant = lang.variant || 'original';
         let iconUrl;
         if (lang.source === 'simpleicons') {
             // Simple Icons CDN com suporte a cores
             const color = lang.color ? lang.color.replace('#', '') : '';
             iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
         } else {
-            const iconName = lang.devicon || lang.icon;
-            iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-original.svg`;
+            iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
         }
 
         if (showLoading) {
@@ -1071,7 +1074,7 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
     return iconsData;
 }
 
-function getSanitizedSvgContent(svgText) {
+function getSanitizedSvgContent(svgText, uniquePrefix) {
     if (!svgText) return '';
     try {
         const parser = new DOMParser();
@@ -1079,162 +1082,47 @@ function getSanitizedSvgContent(svgText) {
         const svgElement = svgDoc.querySelector('svg');
         if (!svgElement) return '';
 
-        svgElement.querySelectorAll('*').forEach(el => {
-            el.removeAttribute('fill');
-            el.removeAttribute('stroke');
+        // Usa o prefixo único fornecido ou gera um novo
+        const prefix = uniquePrefix || `icon-${Math.random().toString(36).substring(2, 11)}-`;
+
+        // Renomeia IDs e referências a eles (ex: gradientes)
+        svgElement.querySelectorAll('[id]').forEach(el => {
+            const oldId = el.id;
+            const newId = prefix + oldId;
+            el.id = newId;
+
+            // Atualiza todas as referências a este ID dentro do próprio SVG
+            svgElement.querySelectorAll(`[fill="url(#${oldId})"]`).forEach(ref => ref.setAttribute('fill', `url(#${newId})`));
+            svgElement.querySelectorAll(`[stroke="url(#${oldId})"]`).forEach(ref => ref.setAttribute('stroke', `url(#${newId})`));
+            svgElement.querySelectorAll(`[href="#${oldId}"]`).forEach(ref => ref.setAttribute('href', `#${newId}`));
+            svgElement.querySelectorAll(`[xlink\\:href="#${oldId}"]`).forEach(ref => ref.setAttribute('xlink:href', `#${newId}`));
         });
+
+        // Renomeia classes em tags <style> e em atributos class=""
+        svgElement.querySelectorAll('style').forEach(style => {
+            style.textContent = style.textContent.replace(/\.([a-zA-Z0-9_-]+)/g, `.${prefix}$1`);
+        });
+        svgElement.querySelectorAll('[class]').forEach(el => {
+            const oldClass = el.getAttribute('class');
+            const newClass = oldClass.split(' ').map(c => prefix + c).join(' ');
+            el.setAttribute('class', newClass);
+        });
+
+        // Lógica para remover fill de ícones monocromáticos (mantida)
+        const filledElements = svgElement.querySelectorAll('[fill]');
+        const fillColors = new Set();
+        filledElements.forEach(el => {
+            const fill = el.getAttribute('fill');
+            if (fill && fill !== 'none' && !fill.startsWith('url(')) {
+                fillColors.add(fill.toLowerCase());
+            }
+        });
+        if (fillColors.size === 1) {
+            filledElements.forEach(el => el.removeAttribute('fill'));
+        }
+
         return svgElement.innerHTML;
-    } catch (e) { return ''; }
-}
-
-function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, iconsData, layerType = 'cores', expandedArray) {
-    const start = sheetIndex * maxFit;
-    const end = Math.min(start + maxFit, expandedArray.length);
-    const sheetLanguages = expandedArray.slice(start, end);
-
-    const { width: paperWidth, height: paperHeight } = getPaperDimensions();
-    const margin = 10;
-    const cellSize = stickerSize + spacing;
-    const cols = Math.floor((paperWidth - 2 * margin) / cellSize);
-
-    const layerConfig = {
-        cores: {
-            title: `Adesivos CORES (CMYK) - Folha ${sheetIndex + 1}`,
-            bgColor: 'white',
-            description: 'Camada de impressão colorida - Enviar para impressora CMYK'
-        },
-        branco: {
-            title: `Adesivos BRANCO (White Layer) - Folha ${sheetIndex + 1}`,
-            bgColor: 'black',
-            description: 'Camada de tinta branca - Define base opaca para cores'
-        },
-        verniz: {
-            title: `Adesivos VERNIZ (UV Relief) - Folha ${sheetIndex + 1}`,
-            bgColor: 'black',
-            description: 'Camada de verniz UV - Define áreas com efeito 3D em alto relevo'
-        }
-    };
-
-    const config = layerConfig[layerType];
-
-    let svg = `<?xml version="1.0" encoding="UTF-8"?>
-<svg width="${paperWidth}mm" height="${paperHeight}mm" viewBox="0 0 ${paperWidth} ${paperHeight}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-  <title>${config.title}</title>
-  <desc>${config.description}</desc>
-  <rect width="${paperWidth}" height="${paperHeight}" fill="${config.bgColor}"/>
-`;
-
-    let defs = '\n  <defs>';
-
-    // Adicionar filtros de contorno SVG
-    const outlineStyle = document.getElementById('outlineStyle')?.value || 'none';
-    if (layerType === 'cores' && outlineStyle !== 'none') {
-        defs += `\n    <filter id="outline-auto">
-      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
-      <feFlood flood-color="black" flood-opacity="0.8" result="flood"/>
-      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
-      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>`;
-
-        defs += `\n    <filter id="outline-double">
-      <feMorphology in="SourceAlpha" result="dilated1" operator="dilate" radius="2"/>
-      <feFlood flood-color="black" flood-opacity="0.8" result="black"/>
-      <feComposite in="black" in2="dilated1" operator="in" result="outline1"/>
-      <feMorphology in="SourceAlpha" result="dilated2" operator="dilate" radius="1"/>
-      <feFlood flood-color="white" flood-opacity="0.9" result="white"/>
-      <feComposite in="white" in2="dilated2" operator="in" result="outline2"/>
-      <feMerge><feMergeNode in="outline1"/><feMergeNode in="outline2"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>`;
-
-        defs += `\n    <filter id="outline-white">
-      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
-      <feFlood flood-color="white" flood-opacity="0.9" result="flood"/>
-      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
-      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>`;
-
-        defs += `\n    <filter id="outline-black">
-      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
-      <feFlood flood-color="black" flood-opacity="0.9" result="flood"/>
-      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
-      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
-    </filter>`;
-    }
-
-    sheetLanguages.forEach((langId) => {
-        const iconData = iconsData[langId];
-        if (!iconData || !iconData.svgText) return;
-
-        const parser = new DOMParser();
-        const svgDoc = parser.parseFromString(iconData.svgText, 'image/svg+xml');
-        const svgElement = svgDoc.querySelector('svg');
-
-        if (svgElement) {
-            const viewBox = svgElement.getAttribute('viewBox') || '0 0 128 128';
-            const innerHTML = (layerType === 'cores') ? svgElement.innerHTML : getSanitizedSvgContent(iconData.svgText);
-            const iconId = langId.replace(/[^a-zA-Z0-9]/g, '-');
-            defs += `\n    <symbol id="icon-${iconId}" viewBox="${viewBox}">${innerHTML}</symbol>`;
-        }
-    });
-    defs += '\n  </defs>';
-    svg += defs;
-
-    sheetLanguages.forEach((langId, index) => {
-        const iconData = iconsData[langId];
-        if (!iconData) return;
-
-        const lang = iconData.lang;
-        if (!lang) return;
-
-        const row = Math.floor(index / cols);
-        const col = index % cols;
-        const x = margin + (col * cellSize) + (cellSize / 2);
-        const y = margin + (row * cellSize) + (cellSize / 2);
-
-        const iconSize = stickerSize;
-        const iconId = `icon-${langId.replace(/[^a-zA-Z0-9]/g, '-')}`;
-
-        svg += `\n  <g transform="translate(${x}, ${y})">`;
-
-        // Aplicar estratégias de fundo
-        const stickerBackground = document.getElementById('stickerBackground').value;
-        const iconColor = lang.color || '#cccccc';
-
-        if (layerType === 'cores' && stickerBackground !== 'transparent') {
-            const bgColor = getBackgroundColor(iconColor, stickerBackground);
-            const bgSize = stickerSize;
-            const borderRadius = (shape === 'rounded') ? bgSize * 0.15 : 0;
-
-            if (shape === 'circle') {
-                svg += `\n    <circle cx="0" cy="0" r="${bgSize / 2}" fill="${bgColor}" />`;
-            } else {
-                svg += `\n    <rect x="${-bgSize / 2}" y="${-bgSize / 2}" width="${bgSize}" height="${bgSize}" rx="${borderRadius}" ry="${borderRadius}" fill="${bgColor}" />`;
-            }
-        }
-
-        if (iconData.svgText) {
-            const fillColor = (layerType === 'branco' || layerType === 'verniz') ? 'fill="white"' : '';
-
-            // Aplicar filtro de contorno
-            let filterAttr = '';
-            const outlineStyle = document.getElementById('outlineStyle')?.value || 'none';
-            if (layerType === 'cores' && outlineStyle !== 'none' && outlineStyle !== 'complementary') {
-                filterAttr = `filter="url(#outline-${outlineStyle})"`;
-            }
-
-            svg += `\n    <svg x="${-iconSize / 2}" y="${-iconSize / 2}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet">`;
-            svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${fillColor} ${filterAttr}/>`;
-            svg += `\n    </svg>`;
-        } else {
-            const fontSize = stickerSize / 8;
-            svg += `\n    <text x="0" y="${fontSize / 3}" text-anchor="middle" font-size="${fontSize}" font-weight="bold" fill="${(layerType === 'cores') ? (lang.color || '#666') : 'white'}">${lang.name}</text>`;
-        }
-
-        svg += `\n  </g>`;
-    });
-
-    svg += `\n</svg>`;
-    return svg;
+    } catch (e) { console.error("SVG sanitization error:", e); return ''; }
 }
 
 function downloadFile(filename, content, mimeType) {
@@ -1302,3 +1190,170 @@ function setupMagnifier() {
 window.addEventListener('DOMContentLoaded', renderLanguages);
 window.addEventListener('DOMContentLoaded', updateStats);
 window.addEventListener('DOMContentLoaded', setupMagnifier);
+
+function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, iconsData, layerType = 'cores', expandedArray) {
+    const start = sheetIndex * maxFit;
+    const end = Math.min(start + maxFit, expandedArray.length);
+    const sheetLanguages = expandedArray.slice(start, end);
+
+    const { width: paperWidth, height: paperHeight } = getPaperDimensions();
+    const margin = 10;
+    const cellSize = stickerSize + spacing;
+    const cols = Math.floor((paperWidth - 2 * margin) / cellSize);
+
+    const layerConfig = {
+        cores: {
+            title: `Adesivos CORES (CMYK) - Folha ${sheetIndex + 1}`,
+            bgColor: 'white',
+            description: 'Camada de impressão colorida - Enviar para impressora CMYK'
+        },
+        branco: {
+            title: `Adesivos BRANCO (White Layer) - Folha ${sheetIndex + 1}`,
+            bgColor: 'black',
+            description: 'Camada de tinta branca - Define base opaca para cores'
+        },
+        verniz: {
+            title: `Adesivos VERNIZ (UV Relief) - Folha ${sheetIndex + 1}`,
+            bgColor: 'black',
+            description: 'Camada de verniz UV - Define áreas com efeito 3D em alto relevo'
+        }
+    };
+
+    const config = layerConfig[layerType];
+
+    let svg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="${paperWidth}mm" height="${paperHeight}mm" viewBox="0 0 ${paperWidth} ${paperHeight}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>${config.title}</title>
+  <desc>${config.description}</desc>
+  <rect width="${paperWidth}" height="${paperHeight}" fill="${config.bgColor}"/>
+`;
+
+    let defs = '\n  <defs>';
+
+    // Adicionar filtros de contorno SVG (globais)
+    const outlineStyle = document.getElementById('outlineStyle')?.value || 'none';
+    if (layerType === 'cores' && outlineStyle !== 'none') {
+        defs += `\n    <filter id="outline-auto">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
+      <feFlood flood-color="black" flood-opacity="0.8" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+
+        defs += `\n    <filter id="outline-double">
+      <feMorphology in="SourceAlpha" result="dilated1" operator="dilate" radius="2"/>
+      <feFlood flood-color="black" flood-opacity="0.8" result="black"/>
+      <feComposite in="black" in2="dilated1" operator="in" result="outline1"/>
+      <feMorphology in="SourceAlpha" result="dilated2" operator="dilate" radius="1"/>
+      <feFlood flood-color="white" flood-opacity="0.9" result="white"/>
+      <feComposite in="white" in2="dilated2" operator="in" result="outline2"/>
+      <feMerge><feMergeNode in="outline1"/><feMergeNode in="outline2"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+
+        defs += `\n    <filter id="outline-white">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
+      <feFlood flood-color="white" flood-opacity="0.9" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+
+        defs += `\n    <filter id="outline-black">
+      <feMorphology in="SourceAlpha" result="dilated" operator="dilate" radius="1"/>
+      <feFlood flood-color="black" flood-opacity="0.9" result="flood"/>
+      <feComposite in="flood" in2="dilated" operator="in" result="outline"/>
+      <feMerge><feMergeNode in="outline"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>`;
+    }
+
+    // Criar symbols encapsulados com prefixos únicos
+    const symbolPrefixes = new Map();
+    sheetLanguages.forEach((langId, index) => {
+        const iconData = iconsData[langId];
+        if (!iconData || !iconData.svgText) return;
+
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(iconData.svgText, 'image/svg+xml');
+        const svgElement = svgDoc.querySelector('svg');
+
+        if (svgElement) {
+            const viewBox = svgElement.getAttribute('viewBox') || '0 0 128 128';
+            const iconId = langId.replace(/[^a-zA-Z0-9]/g, '-');
+            // Gera um prefixo único para CADA ocorrência do ícone
+            const uniquePrefix = `${iconId}-${sheetIndex}-${index}-`;
+            symbolPrefixes.set(langId + '-' + index, uniquePrefix);
+
+            const innerHTML = getSanitizedSvgContent(iconData.svgText, uniquePrefix);
+            // Coloca o conteúdo (incluindo <style> e <defs> locais) DENTRO do <symbol>
+            defs += `\n    <symbol id="icon-${uniquePrefix}" viewBox="${viewBox}">${innerHTML.trim()}</symbol>`;
+        }
+    });
+    defs += '\n  </defs>';
+    svg += defs;
+
+    // Renderizar os adesivos usando os symbols
+    sheetLanguages.forEach((langId, index) => {
+        const iconData = iconsData[langId];
+        if (!iconData) return;
+
+        const lang = iconData.lang;
+        if (!lang) return;
+
+        const row = Math.floor(index / cols);
+        const col = index % cols;
+        const x = margin + (col * cellSize) + (cellSize / 2);
+        const y = margin + (row * cellSize) + (cellSize / 2);
+
+        const iconSize = stickerSize;
+        // Usa o prefixo único gerado para este ícone específico
+        const uniquePrefix = symbolPrefixes.get(langId + '-' + index);
+        const iconId = `icon-${uniquePrefix}`;
+
+        svg += `\n  <g transform="translate(${x}, ${y})">`;
+
+        // Aplicar estratégias de fundo
+        const stickerBackground = document.getElementById('stickerBackground').value;
+        const iconColor = lang.color || '#cccccc';
+
+        if (layerType === 'cores' && stickerBackground !== 'transparent') {
+            const bgColor = getBackgroundColor(iconColor, stickerBackground);
+            const bgSize = stickerSize;
+            const borderRadius = (shape === 'rounded') ? bgSize * 0.15 : 0;
+
+            if (shape === 'circle') {
+                svg += `\n    <circle cx="0" cy="0" r="${bgSize / 2}" fill="${bgColor}" />`;
+            } else {
+                svg += `\n    <rect x="${-bgSize / 2}" y="${-bgSize / 2}" width="${bgSize}" height="${bgSize}" rx="${borderRadius}" ry="${borderRadius}" fill="${bgColor}" />`;
+            }
+        }
+
+        if (iconData.svgText) {
+            // Verifica se o SVG original já tem um preenchimento com gradiente ou estilo complexo.
+            const hasComplexFill = iconData.svgText.includes('url(#') || iconData.svgText.includes('<style>');
+
+            // Aplica a cor sólida apenas se não houver preenchimento complexo, ou se for camada de branco/verniz.
+            let fillColor = '';
+            if (layerType === 'branco' || layerType === 'verniz' || !hasComplexFill) {
+                fillColor = `fill="${(layerType === 'cores') ? iconColor : 'white'}"`;
+            }
+
+            // Aplicar filtro de contorno
+            let filterAttr = '';
+            const outlineStyle = document.getElementById('outlineStyle')?.value || 'none';
+            if (layerType === 'cores' && outlineStyle !== 'none' && outlineStyle !== 'complementary') {
+                filterAttr = `filter="url(#outline-${outlineStyle})"`;
+            }
+
+            svg += `\n    <svg x="${-iconSize / 2}" y="${-iconSize / 2}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet">`;
+            svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${fillColor} ${filterAttr}/>`;
+            svg += `\n    </svg>`;
+        } else {
+            const fontSize = stickerSize / 8;
+            svg += `\n    <text x="0" y="${fontSize / 3}" text-anchor="middle" font-size="${fontSize}" font-weight="bold" fill="${(layerType === 'cores') ? (lang.color || '#666') : 'white'}">${lang.name}</text>`;
+        }
+
+        svg += `\n  </g>`;
+    });
+
+    svg += `\n</svg>`;
+    return svg;
+}

@@ -104,7 +104,7 @@ export const languagesData = {
         { name: "Arch Linux", devicon: "archlinux", color: "#1793d1" },
         { name: "CentOS", devicon: "centos", color: "#212429" },
         { name: "Kali Linux", devicon: "kalilinux", color: "#557c94" },
-        { name: "Manjaro", devicon: "manjaro", color: "#35bf5c" },
+        { name: "Manjaro", devicon: "manjaro", color: "#35bf5c" }, // Corrigido de um devicon inexistente
         { name: "Raspberry Pi", devicon: "raspberrypi", color: "#c51a4a" },
         { name: "Red Hat", devicon: "redhat", color: "#ee0000" }
     ],
