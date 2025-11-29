@@ -1176,7 +1176,20 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
         try {
             const response = await fetch(iconUrl);
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            const svgText = await response.text();
+            let svgText = await response.text();
+
+            // Para Simple Icons, força a cor diretamente no SVG
+            if (lang.source === 'simpleicons' && lang.color) {
+                console.log(`Aplicando cor ${lang.color} ao ${lang.name}`);
+                console.log('SVG antes:', svgText.substring(0, 200));
+                svgText = svgText.replace(/currentColor/g, lang.color);
+                svgText = svgText.replace(/fill="#000"/g, `fill="${lang.color}"`);
+                svgText = svgText.replace(/fill="#000000"/g, `fill="${lang.color}"`);
+                svgText = svgText.replace(/fill="black"/g, `fill="${lang.color}"`);
+                svgText = svgText.replace(/<path /g, `<path fill="${lang.color}" `);
+                console.log('SVG depois:', svgText.substring(0, 200));
+            }
+
             iconsData[langId] = { lang, svgText };
         } catch (error) {
             console.error(`Erro ao buscar ${lang.name}:`, error);
