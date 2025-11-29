@@ -375,6 +375,29 @@ select option {
     gap: 4px;
 }
 
+.individual-settings {
+    display: none;
+    margin-top: 8px;
+}
+
+.icon-card.selected .individual-settings {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.individual-settings select {
+    padding: 6px 28px 6px 10px !important;
+    font-size: 11px !important;
+    background: #2a2440 !important;
+    border: 1px solid #3d3654 !important;
+}
+
+.individual-settings label {
+    margin-top: 4px;
+    font-size: 10px;
+}
+
 @media (max-width: 1024px) {
     .main-container {
         grid-template-columns: 1fr;

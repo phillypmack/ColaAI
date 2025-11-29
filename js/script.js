@@ -110,7 +110,7 @@ const languagesData = {
         { name: "Arch Linux", devicon: "archlinux", color: "#1793d1" },
         { name: "CentOS", devicon: "centos", color: "#212429" },
         { name: "Kali Linux", devicon: "kalilinux", color: "#557c94" },
-        { name: "Manjaro", devicon: "manjaro", color: "#35bf5c" },
+        { name: "Manjaro", icon: "manjaro", color: "#35BF5C", source: "simpleicons" },
         { name: "Raspberry Pi", devicon: "raspberrypi", color: "#c51a4a" },
         { name: "Red Hat", devicon: "redhat", color: "#ee0000" }
     ],
@@ -453,6 +453,8 @@ const languagesData = {
 };
 
 let selectedLanguages = new Map();
+// Armazena configurações individuais de cada ícone: { langId: { background, outline } }
+let iconCustomSettings = new Map();
 
 function renderLanguages() {
     const container = document.getElementById('languagesContainer');
@@ -483,15 +485,23 @@ function renderLanguages() {
                 const langId = `${category.replace(/\s/g, '-')}-${index}`;
 
                 // Suporta múltiplas fontes de ícones
-                const iconName = lang.devicon || lang.icon;
-                const variant = lang.variant || 'original';
                 let iconUrl;
-                if (lang.source === 'simpleicons') {
-                    // Simple Icons CDN com suporte a cores
-                    const color = lang.color ? lang.color.replace('#', '') : '';
-                    iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+                if (lang.customSvg) {
+                    // SVG customizado inline convertido para data URL
+                    iconUrl = `data:image/svg+xml;base64,${btoa(lang.customSvg)}`;
+                } else if (lang.customUrl) {
+                    // URL customizada direta
+                    iconUrl = lang.customUrl;
                 } else {
-                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
+                    const iconName = lang.devicon || lang.icon;
+                    const variant = lang.variant || 'original';
+                    if (lang.source === 'simpleicons') {
+                        // Simple Icons CDN com suporte a cores
+                        const color = lang.color ? lang.color.replace('#', '') : '';
+                        iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+                    } else {
+                        iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
+                    }
                 }
 
                 const card = document.createElement('div');
@@ -510,6 +520,30 @@ function renderLanguages() {
                                 <input type="number" id="qty-${langId}" min="1" value="1"
                                     onchange="updateIconQuantity('${langId}', this.value)"
                                     onclick="event.stopPropagation()">
+                            </div>
+                            <div class="individual-settings w-full">
+                                <label class="text-xs text-gray-400">Fundo:</label>
+                                <select id="bg-${langId}" onchange="updateIconSettings('${langId}', 'background', this.value)" onclick="event.stopPropagation()" class="text-xs">
+                                    <option value="global">Global</option>
+                                    <option value="transparent">Transparente</option>
+                                    <option value="icon_color">Cor do Ícone</option>
+                                    <option value="white">Branco</option>
+                                    <option value="black">Preto</option>
+                                    <option value="auto_contrast">Contraste Auto</option>
+                                    <option value="complementary">Complementar</option>
+                                    <option value="light_pastel">Pastel</option>
+                                    <option value="dark_vibrant">Escuro</option>
+                                </select>
+                                <label class="text-xs text-gray-400 mt-1">Contorno:</label>
+                                <select id="outline-${langId}" onchange="updateIconSettings('${langId}', 'outline', this.value)" onclick="event.stopPropagation()" class="text-xs">
+                                    <option value="global">Global</option>
+                                    <option value="none">Sem Contorno</option>
+                                    <option value="auto">Automático</option>
+                                    <option value="double">Duplo</option>
+                                    <option value="white">Branco</option>
+                                    <option value="black">Preto</option>
+                                    <option value="complementary">Complementar</option>
+                                </select>
                             </div>
                         `;
 
@@ -544,15 +578,23 @@ function renderLanguages() {
                 const langId = `${category.replace(/\s/g, '-')}-${index}`;
 
                 // Suporta múltiplas fontes de ícones
-                const iconName = lang.devicon || lang.icon;
-                const variant = lang.variant || 'original';
                 let iconUrl;
-                if (lang.source === 'simpleicons') {
-                    // Simple Icons CDN com suporte a cores
-                    const color = lang.color ? lang.color.replace('#', '') : '';
-                    iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+                if (lang.customSvg) {
+                    // SVG customizado inline convertido para data URL
+                    iconUrl = `data:image/svg+xml;base64,${btoa(lang.customSvg)}`;
+                } else if (lang.customUrl) {
+                    // URL customizada direta
+                    iconUrl = lang.customUrl;
                 } else {
-                    iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
+                    const iconName = lang.devicon || lang.icon;
+                    const variant = lang.variant || 'original';
+                    if (lang.source === 'simpleicons') {
+                        // Simple Icons CDN com suporte a cores
+                        const color = lang.color ? lang.color.replace('#', '') : '';
+                        iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+                    } else {
+                        iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
+                    }
                 }
 
                 const card = document.createElement('div');
@@ -572,6 +614,30 @@ function renderLanguages() {
                                     onchange="updateIconQuantity('${langId}', this.value)"
                                     onclick="event.stopPropagation()">
                             </div>
+                            <div class="individual-settings w-full">
+                                <label class="text-xs text-gray-400">Fundo:</label>
+                                <select id="bg-${langId}" onchange="updateIconSettings('${langId}', 'background', this.value)" onclick="event.stopPropagation()" class="text-xs">
+                                    <option value="global">Global</option>
+                                    <option value="transparent">Transparente</option>
+                                    <option value="icon_color">Cor do Ícone</option>
+                                    <option value="white">Branco</option>
+                                    <option value="black">Preto</option>
+                                    <option value="auto_contrast">Contraste Auto</option>
+                                    <option value="complementary">Complementar</option>
+                                    <option value="light_pastel">Pastel</option>
+                                    <option value="dark_vibrant">Escuro</option>
+                                </select>
+                                <label class="text-xs text-gray-400 mt-1">Contorno:</label>
+                                <select id="outline-${langId}" onchange="updateIconSettings('${langId}', 'outline', this.value)" onclick="event.stopPropagation()" class="text-xs">
+                                    <option value="global">Global</option>
+                                    <option value="none">Sem Contorno</option>
+                                    <option value="auto">Automático</option>
+                                    <option value="double">Duplo</option>
+                                    <option value="white">Branco</option>
+                                    <option value="black">Preto</option>
+                                    <option value="complementary">Complementar</option>
+                                </select>
+                            </div>
                         `;
 
                 grid.appendChild(card);
@@ -590,10 +656,31 @@ function renderLanguages() {
             card.classList.add('selected');
             const qtyInput = card.querySelector(`#qty-${langId}`);
             if (qtyInput) qtyInput.value = quantity;
+
+            // Restaurar configurações individuais
+            const settings = iconCustomSettings.get(langId);
+            if (settings) {
+                const bgSelect = card.querySelector(`#bg-${langId}`);
+                const outlineSelect = card.querySelector(`#outline-${langId}`);
+                if (bgSelect) bgSelect.value = settings.background || 'global';
+                if (outlineSelect) outlineSelect.value = settings.outline || 'global';
+            }
         }
     }
 
     updateStats();
+    updatePreview();
+}
+
+function updateIconSettings(langId, settingType, value) {
+    if (!iconCustomSettings.has(langId)) {
+        iconCustomSettings.set(langId, { background: 'global', outline: 'global' });
+    }
+
+    const settings = iconCustomSettings.get(langId);
+    settings[settingType] = value;
+    iconCustomSettings.set(langId, settings);
+
     updatePreview();
 }
 
@@ -654,10 +741,18 @@ function selectCategory(category, event) {
 
 function clearSelection() {
     selectedLanguages.clear();
+    iconCustomSettings.clear();
     document.querySelectorAll('[data-langid]').forEach(card => {
         card.classList.remove('selected');
         const qtyInput = card.querySelector('input[type="number"]');
         if (qtyInput) qtyInput.value = 1;
+
+        // Resetar selects para "Global"
+        const langId = card.dataset.langid;
+        const bgSelect = card.querySelector(`#bg-${langId}`);
+        const outlineSelect = card.querySelector(`#outline-${langId}`);
+        if (bgSelect) bgSelect.value = 'global';
+        if (outlineSelect) outlineSelect.value = 'global';
     });
     updateStats();
     updatePreview();
@@ -1034,6 +1129,30 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
         if (!card) continue;
 
         const lang = JSON.parse(card.dataset.langData || '{}');
+
+        // Se tem SVG customizado, usa diretamente
+        if (lang.customSvg) {
+            iconsData[langId] = { lang, svgText: lang.customSvg };
+            continue;
+        }
+
+        // Se tem URL customizada, faz fetch direto
+        if (lang.customUrl) {
+            if (showLoading) {
+                document.getElementById('loadingProgress').textContent = `${lang.name} (${i + 1}/${total})`;
+            }
+            try {
+                const response = await fetch(lang.customUrl);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const svgText = await response.text();
+                iconsData[langId] = { lang, svgText };
+            } catch (error) {
+                console.error(`Erro ao buscar ${lang.name} de customUrl:`, error);
+                iconsData[langId] = { lang, svgText: null };
+            }
+            continue;
+        }
+
         if (!lang.devicon && !lang.icon) {
             iconsData[langId] = { lang, svgText: null };
             continue;
@@ -1044,9 +1163,8 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
         const variant = lang.variant || 'original';
         let iconUrl;
         if (lang.source === 'simpleicons') {
-            // Simple Icons CDN com suporte a cores
-            const color = lang.color ? lang.color.replace('#', '') : '';
-            iconUrl = `https://cdn.simpleicons.org/${lang.icon}/${color}`;
+            // Simple Icons CDN - não passa cor para que retorne com currentColor
+            iconUrl = `https://cdn.simpleicons.org/${lang.icon}`;
         } else {
             iconUrl = `https://cdn.jsdelivr.net/gh/devicons/devicon/icons/${iconName}/${iconName}-${variant}.svg`;
         }
@@ -1074,7 +1192,7 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
     return iconsData;
 }
 
-function getSanitizedSvgContent(svgText, uniquePrefix) {
+function getSanitizedSvgContent(svgText, uniquePrefix, replaceColor = null) {
     if (!svgText) return '';
     try {
         const parser = new DOMParser();
@@ -1108,17 +1226,19 @@ function getSanitizedSvgContent(svgText, uniquePrefix) {
             el.setAttribute('class', newClass);
         });
 
-        // Lógica para remover fill de ícones monocromáticos (mantida)
-        const filledElements = svgElement.querySelectorAll('[fill]');
-        const fillColors = new Set();
-        filledElements.forEach(el => {
-            const fill = el.getAttribute('fill');
-            if (fill && fill !== 'none' && !fill.startsWith('url(')) {
-                fillColors.add(fill.toLowerCase());
-            }
-        });
-        if (fillColors.size === 1) {
-            filledElements.forEach(el => el.removeAttribute('fill'));
+        // Se uma cor de substituição foi fornecida, substitui currentColor e preto
+        if (replaceColor) {
+            // Substitui em todos os elementos com fill
+            svgElement.querySelectorAll('[fill]').forEach(el => {
+                const fillValue = el.getAttribute('fill');
+                if (fillValue === 'currentColor' || fillValue === '#000' || fillValue === '#000000' || fillValue === 'black') {
+                    el.setAttribute('fill', replaceColor);
+                }
+            });
+            // Também adiciona fill em elementos que não tem fill definido
+            svgElement.querySelectorAll('path:not([fill]), circle:not([fill]), rect:not([fill]), polygon:not([fill])').forEach(el => {
+                el.setAttribute('fill', replaceColor);
+            });
         }
 
         return svgElement.innerHTML;
@@ -1282,7 +1402,19 @@ function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, icons
             const uniquePrefix = `${iconId}-${sheetIndex}-${index}-`;
             symbolPrefixes.set(langId + '-' + index, uniquePrefix);
 
-            const innerHTML = getSanitizedSvgContent(iconData.svgText, uniquePrefix);
+            // Determinar se deve substituir a cor
+            const lang = iconData.lang;
+            const iconColor = (layerType === 'cores') ? (lang.color || '#cccccc') : 'white';
+
+            // Detecta se precisa aplicar cor
+            const usesCurrentColor = iconData.svgText.includes('currentColor');
+            const hasOnlyBlack = /fill="(#000|#000000|black|currentColor)"/.test(iconData.svgText) &&
+                                 !/fill="#(?!000$|000000$)[0-9a-fA-F]{3,6}"/.test(iconData.svgText);
+
+            const shouldReplaceColor = (layerType === 'branco' || layerType === 'verniz') ||
+                                       (layerType === 'cores' && (usesCurrentColor || hasOnlyBlack));
+
+            const innerHTML = getSanitizedSvgContent(iconData.svgText, uniquePrefix, shouldReplaceColor ? iconColor : null);
             // Coloca o conteúdo (incluindo <style> e <defs> locais) DENTRO do <symbol>
             defs += `\n    <symbol id="icon-${uniquePrefix}" viewBox="${viewBox}">${innerHTML.trim()}</symbol>`;
         }
@@ -1310,8 +1442,15 @@ function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, icons
 
         svg += `\n  <g transform="translate(${x}, ${y})">`;
 
-        // Aplicar estratégias de fundo
-        const stickerBackground = document.getElementById('stickerBackground').value;
+        // Obter configurações individuais ou usar configurações globais
+        const customSettings = iconCustomSettings.get(langId);
+        const stickerBackground = (customSettings && customSettings.background !== 'global')
+            ? customSettings.background
+            : document.getElementById('stickerBackground').value;
+        const outlineStyleForIcon = (customSettings && customSettings.outline !== 'global')
+            ? customSettings.outline
+            : document.getElementById('outlineStyle')?.value || 'none';
+
         const iconColor = lang.color || '#cccccc';
 
         if (layerType === 'cores' && stickerBackground !== 'transparent') {
@@ -1327,24 +1466,14 @@ function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, icons
         }
 
         if (iconData.svgText) {
-            // Verifica se o SVG original já tem um preenchimento com gradiente ou estilo complexo.
-            const hasComplexFill = iconData.svgText.includes('url(#') || iconData.svgText.includes('<style>');
-
-            // Aplica a cor sólida apenas se não houver preenchimento complexo, ou se for camada de branco/verniz.
-            let fillColor = '';
-            if (layerType === 'branco' || layerType === 'verniz' || !hasComplexFill) {
-                fillColor = `fill="${(layerType === 'cores') ? iconColor : 'white'}"`;
-            }
-
-            // Aplicar filtro de contorno
+            // Aplicar filtro de contorno (usando configuração individual)
             let filterAttr = '';
-            const outlineStyle = document.getElementById('outlineStyle')?.value || 'none';
-            if (layerType === 'cores' && outlineStyle !== 'none' && outlineStyle !== 'complementary') {
-                filterAttr = `filter="url(#outline-${outlineStyle})"`;
+            if (layerType === 'cores' && outlineStyleForIcon !== 'none' && outlineStyleForIcon !== 'complementary') {
+                filterAttr = `filter="url(#outline-${outlineStyleForIcon})"`;
             }
 
             svg += `\n    <svg x="${-iconSize / 2}" y="${-iconSize / 2}" width="${iconSize}" height="${iconSize}" preserveAspectRatio="xMidYMid meet">`;
-            svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${fillColor} ${filterAttr}/>`;
+            svg += `\n      <use href="#${iconId}" width="100%" height="100%" ${filterAttr}/>`;
             svg += `\n    </svg>`;
         } else {
             const fontSize = stickerSize / 8;
