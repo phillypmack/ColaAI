@@ -120,7 +120,7 @@ const languagesData = {
         { name: "NPM", devicon: "npm", color: "#cb3837" },
         { name: "Yarn", devicon: "yarn", color: "#2c8ebb" },
         { name: "ESLint", devicon: "eslint", color: "#4b32c3" },
-        { name: "Jest", devicon: "jest", color: "#c21325" },
+        { name: "Jest", customSvg: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 398.25 439.89"><defs><style>.a,.c{fill:#c21325;}.a,.b{stroke:#fff;stroke-width:20px;}.b{fill:none;}</style></defs><path class="a" d="M334.92,218.1c-.54.33-18.35-2.66-40.67-4.17a447.59,447.59,0,0,0-56.74,0c-14,1-32.44-6.09-34.64,2.28-8.24,31.35-26,58.66-48.51,79.93A163.89,163.89,0,0,1,97,331.73c-25-12.84-36.81-41.4-26.16-66.44,8.45-19.87,18.28-41.74.13-46.75-13.21-3.64-20.46,9-25.54,22.55C35.69,267,17.2,293.83,11.93,325.61c-5.56,33.54,0,69.15,29,89.25,67.56,46.83,140.9-29,218.23-48.09,28-6.92,58.78-5.8,83.47-20.1a69.92,69.92,0,0,0,34.23-48.52C382.43,266,365.71,234.09,334.92,218.1Z"/><path class="b" d="M202.87,216.19c-8.24,31.35-26,58.66-48.51,79.93A163.84,163.84,0,0,1,97,331.73c-25-12.84-36.8-41.4-26.15-66.44,8.45-19.87,18.28-41.74.13-46.75-13.21-3.64-20.47,9-25.54,22.55C35.69,267,17.2,293.84,11.93,325.61c-5.56,33.54,0,69.15,29,89.25,67.56,46.83,140.9-29,218.23-48.09,28-6.92,58.78-5.8,83.47-20.1a69.92,69.92,0,0,0,34.23-48.52c5.58-32.13-11.14-64.06-41.93-80"/><polygon class="c" points="264.89 91.17 319.21 201.98 384.31 10 145.32 10 210.26 201.64 264.89 91.17"/><polygon class="b" points="264.89 91.17 319.21 201.98 384.31 10 145.32 10 210.26 201.64 264.89 91.17"/><circle class="c" cx="198.99" cy="216.58" r="40.95"/><circle class="b" cx="198.99" cy="216.58" r="40.95"/><circle class="a" cx="332.37" cy="216.58" r="40.95"/><circle class="b" cx="332.37" cy="216.58" r="40.95"/><circle class="c" cx="65.1" cy="216.88" r="40.94"/><circle class="b" cx="65.1" cy="216.88" r="40.94"/></svg>', color: "#c21325" },
         { name: "Figma", devicon: "figma", color: "#f24e1e" },
         { name: "Postman", devicon: "postman", color: "#ff6c37" },
         { name: "Jira", devicon: "jira", color: "#0052cc" },
@@ -1180,14 +1180,11 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
 
             // Para Simple Icons, força a cor diretamente no SVG
             if (lang.source === 'simpleicons' && lang.color) {
-                console.log(`Aplicando cor ${lang.color} ao ${lang.name}`);
-                console.log('SVG antes:', svgText.substring(0, 200));
                 svgText = svgText.replace(/currentColor/g, lang.color);
                 svgText = svgText.replace(/fill="#000"/g, `fill="${lang.color}"`);
                 svgText = svgText.replace(/fill="#000000"/g, `fill="${lang.color}"`);
                 svgText = svgText.replace(/fill="black"/g, `fill="${lang.color}"`);
                 svgText = svgText.replace(/<path /g, `<path fill="${lang.color}" `);
-                console.log('SVG depois:', svgText.substring(0, 200));
             }
 
             iconsData[langId] = { lang, svgText };
