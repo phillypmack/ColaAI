@@ -456,11 +456,232 @@ let selectedLanguages = new Map();
 // Armazena configurações individuais de cada ícone: { langId: { background, outline } }
 let iconCustomSettings = new Map();
 
+// Lista de modelos locais (SVGs na pasta svg/)
+let localModels = [];
+let localModelsLoaded = false;
+
+/**
+ * Carrega a lista de modelos locais da pasta svg/
+ */
+async function loadLocalModels() {
+    if (localModelsLoaded) return;
+
+    try {
+        // Lista de arquivos SVG locais (você pode expandir essa lista conforme necessário)
+        const svgFiles = [
+            ".NET.svg", ".NET-core.svg", "AArch64.svg", "Adobe-Commerce-(Magneto).svg",
+            "Adobe-Illustrator.svg", "Adobe-Photoshop.svg", "Adobe-Premiere-Pro.svg", "Adobe-XD.svg",
+            "AdonisJS.svg", "After-Effects.svg", "Akka.svg", "Algolia.svg", "Alpine.js.svg",
+            "Anaconda.svg", "Android.svg", "Android-Studio.svg", "Angular.svg", "AngularJS.svg",
+            "Ansible.svg", "Ant-Design.svg", "Apache.svg", "Apache-Airflow.svg", "Apache-Cassandra.svg",
+            "Apache-Groovy.svg", "Apache-Hadoop.svg", "Apache-Kafka.svg", "Apache-Maven.svg",
+            "Apache-Spark.svg", "Apache-Subversion.svg", "Apache-Tomcat.svg", "APL.svg",
+            "Appcelerator.svg", "Apple.svg", "Apple-Safari.svg", "Appwrite.svg", "Arch-Linux.svg",
+            "Arduino.svg", "Argo-CD.svg", "Astro.svg", "Atom.svg", "Autodesk-Maya.svg",
+            "Autodesk-ShotGrid.svg", "Awk.svg", "AWS.svg", "Azios.svg", "Azure.svg",
+            "Azure-Devops.svg", "Azure-SQL-Database.svg", "Babel.svg", "Backbone.js.svg",
+            "Ballerina.svg", "Bamboo.svg", "Bash.svg", "Behance.svg", "BitBucket.svg",
+            "Blender.svg", "Bootstrap.svg", "Bower.svg", "BrowserStack.svg", "Bulma.svg",
+            "Bun.svg", "C#-(CSharp).svg", "C.svg", "C++-(CPlusPlus).svg", "Cairo-Graphics.svg",
+            "CakePHP.svg", "Canva.svg", "Capacitor.svg", "CentOS.svg", "Chrome.svg",
+            "CircleCI.svg", "Clarity.svg", "CLion.svg", "Clojure.svg", "ClojureScript.svg",
+            "Cloudflare.svg", "Cloudflare-Workers.svg", "CMake.svg", "Codeac.svg", "Codecov.svg",
+            "CodeIgniter.svg", "CodePen.svg", "CoffeeScript.svg", "Composer.svg", "Confluence.svg",
+            "Consul.svg", "Contao.svg", "Core-js.svg", "Cosmos-BD.svg", "CouchDB.svg",
+            "Crystal.svg", "CSS3.svg", "Cucumber.svg", "Cypress.svg", "D3.js.svg",
+            "Dart.svg", "DataGrip.svg", "DataSpell.svg", "DBeaver.svg", "Debian.svg",
+            "Deno.svg", "Devicon.svg", "Digital-Ocean.svg", "Discord.js.svg", "Django.svg",
+            "Django-REST.svg", "Docker.svg", "Doctrine.svg", "Dropwizard.svg", "Drupal.svg",
+            "Eclipse-Ceylon.svg", "Eclipse-IDE.svg", "Eclipse-Vert.x.svg", "Elastic-Beats.svg",
+            "Elastic-Search.svg", "Electron.svg", "Eleventy-(11ty).svg", "Elixir.svg", "Elm.svg",
+            "Embedded-C.svg", "Ember.js.svg", "Envoy.svg", "Erlang.svg", "ESLint.svg",
+            "Express.svg", "Facebook.svg", "FastAPI.svg", "Fastify.svg", "Fauna.svg",
+            "Feathers.svg", "Fedora.svg", "Figma.svg", "FileZilla.svg", "Firebase.svg",
+            "Firefox.svg", "Flask.svg", "Flutter.svg", "Fortran.svg", "Foundation.svg",
+            "FSharp-(F#).svg", "Gatling.svg", "Gatsby.svg", "Gazebo.svg", "GCC.svg",
+            "Gentoo.svg", "Ghost.svg", "GIMP.svg", "Git.svg", "GitBook.svg",
+            "GitHub.svg", "GitHub-Actions.svg", "GitHub-Codespaces.svg", "GitLab.svg", "Gitpod.svg",
+            "Gitter.svg", "GNU-Emacs.svg", "Go.svg", "Godot-Engine.svg", "GoLand.svg",
+            "Google.svg", "Google-Cloud.svg", "Gradle.svg", "Grafana.svg", "Grails.svg",
+            "GraphQL.svg", "Grunt.js.svg", "Gulp.js.svg", "Handlebars.svg", "Hardhat.svg",
+            "Harvester.svg", "HashiCorp-Terraform.svg", "HashiCorp-Vagrant.svg", "HashiCorp-Vault.svg",
+            "Haskell.svg", "Haxe.svg", "Helm.svg", "Heroku.svg", "Hibernate.svg",
+            "Homebrew.svg", "HTML5.svg", "Hugo.svg", "IBM-SPSS-Statistics.svg", "IFTTT.svg",
+            "InfluxDB.svg", "Inkscape-.svg", "Insomnia.svg", "IntelliJ-IDEA.svg",
+            "Internet-Explorer-10-(ie10).svg", "Ionic.svg", "Jaeger-Tracing.svg", "Jamstack.svg",
+            "Jasmine.svg", "Java.svg", "JavaScript.svg", "Jeet.svg", "Jekyll.svg",
+            "Jenkins.svg", "Jest.svg", "JetBrains.svg", "Jira.svg", "Jira-Align.svg",
+            "jQuery.svg", "JSON.svg", "Jule.svg", "Julia.svg", "JUnit.svg",
+            "Jupyter.svg", "K3OS.svg", "K3s.svg", "Kaggle.svg", "Karate-Labs.svg",
+            "Karma.svg", "Keras.svg", "Kibana.svg", "Knex.js.svg", "Knockout.svg",
+            "Kotlin.svg", "Krakenjs.svg", "Ktor.svg", "Kubernetes.svg", "LabVIEW.svg",
+            "Laravel.svg", "LaTeX.svg", "Less.js.svg", "LinkedIn.svg", "Linux.svg",
+            "Liquibase.svg", "Livewire.svg", "LLVM.svg", "Logstash.svg", "Lua.svg",
+            "Lumen.svg", "Markdown.svg", "Materialize.svg", "Material-UI.svg", "MATLAB.svg",
+            "Matplotlib.svg", "Meteor.js.svg", "Microsoft-SQL-Server.svg", "Minitab.svg",
+            "MobX.svg", "Mocha.svg", "MODX.svg", "Moleculer.svg", "MongoDB.svg",
+            "Mongoose.js.svg", "Moodle.svg", "MS-DOS.svg", "MySQL.svg", "Nano.svg",
+            "Nerog.svg", "Nest.js.svg", "NetworkX.svg", "New4j.svg", "Next.js.svg",
+            "NGINX.svg", "NHibernate.svg", "Nim.svg", "Nimble.svg", "NixOS.svg",
+            "Node.js.svg", "Nodemon.svg", "NPM.svg", "NuGet.svg", "NumPy.svg",
+            "Nuxt-JS.svg", "NW.js-(node-webkit).svg", "Objective-C.svg", "OCaml.svg",
+            "Oh-my-zsh.svg", "Okta.svg", "OpenAL.svg", "OpenAPI.svg", "OpenCL.svg",
+            "OpenCV.svg", "OpenGL.svg", "OpenStack.svg", "openSUSE.svg", "OpenTelemetry.svg",
+            "Opera.svg", "Oracle.svg", "p5-JS.svg", "Packer.svg", "Pandas.svg",
+            "Perl.svg", "pfSense.svg", "Phalcon.svg", "Phoenix-Framework.svg", "Photon-Engine-.svg",
+            "PHP.svg", "PhpStorm.svg", "Playwrite.svg", "Ploty.svg", "Podman.svg",
+            "Polygon.svg", "Portainer.svg", "PostCSS.svg", "PostgresSQL.svg", "Postman.svg",
+            "Powershell.svg", "Processing.svg", "Prometheus.svg", "Protractor-Test.svg",
+            "PureScript.svg", "PuTTY.svg", "PyCharm.svg", "PyScript.svg", "pytest.svg",
+            "Python.svg", "Python-Poetry.svg", "PyTorch.svg", "Qodana.svg", "Qt-Framework.svg",
+            "Quarkus.svg", "Quasar.svg", "Qwik.svg", "R-.svg", "RabbitMQ.svg",
+            "Rancher.svg", "Raspberry-Pi.svg", "Reach.svg", "React.svg", "React-Bootstrap.svg",
+            "Realm.svg", "RedCube's-epic-Compiler-Thingy-programming-(ReCT).svg", "Red-Hat.svg",
+            "Redis.svg", "Redux.svg", "Ren'Py.svg", "Rider.svg",
+            "Robot-Operating-System-(ROS).svg", "RocksDB.svg", "Rollup.js.svg", "RSpec.svg",
+            "RStudio.svg", "Ruby.svg", "RubyMine.svg", "Ruby-on-Rails.svg", "Rust.svg",
+            "Salesforce.svg", "Sanity.svg", "Sass.svg", "Scala.svg", "Scalingo.svg",
+            "Selenium.svg", "Sema-Software.svg", "Sequelize.svg", "Shopware.svg",
+            "Simple-DirectMedia-Layer-(SDL).svg", "Sketch.svg", "Slack.svg", "Socket.io.svg",
+            "Solid.js.svg", "Solidity.svg", "SonarQube.svg", "Sourcetree.svg", "Splunk.svg",
+            "Spring.svg", "SQLAlchemy.svg", "SQL-Developer.svg", "SQLite.svg", "SSH.svg",
+            "Stack-Overflow.svg", "Stata.svg", "Storybook.svg", "Streamlit.svg", "Stylus.svg",
+            "Svelte.svg", "Swagger.svg", "Swift.svg", "Symfony.svg", "Tailwind-CSS.svg",
+            "Tauri.svg", "TensorFlow.svg", "TeX.svg", "The-Algorithms.svg", "Three.js.svg",
+            "Titanium-SDK.svg", "TortoiseGit.svg", "Tower.svg", "Traefik-Mesh.svg",
+            "Traefik-Proxy.svg", "Travis-CI.svg", "Trello.svg", "Twitter.svg", "TypeScript.svg",
+            "TYPO3.svg", "Ubuntu.svg", "Unified-Modelling-Language-(UML).svg", "Unity.svg",
+            "UNIX.svg", "Unreal-Engine.svg", "uWSGI.svg", "V8.svg", "Vala.svg",
+            "Vercel.svg", "Veutify.svg", "Vim.svg", "Visual-Studio.svg",
+            "Visual-Studio-Code-(VS-Code).svg", "Vite.js.svg", "Vite.svg", "vSphere.svg",
+            "Vue.js.svg", "Vue-Storefront.svg", "Vyper.svg", "WebAssembly.svg", "Webflow.svg",
+            "Weblate.svg", "Webpack.svg", "WebStorm.svg", "Windows-11.svg", "Windows-8.svg",
+            "WooCommerce.svg", "WordPress.svg", "Xamarin.svg", "Xcode.svg", "XML.svg",
+            "YAML.svg", "Yarn.svg", "Yii-Framework.svg", "Yuno-Host.svg", "Zend-Framework.svg",
+            "Zig.svg"
+        ];
+
+        localModels = svgFiles.map(filename => {
+            const name = filename.replace('.svg', '').replace(/-/g, ' ').replace(/\(/g, ' ').replace(/\)/g, '');
+            return {
+                name: name,
+                filename: filename,
+                path: `svg/${filename}`,
+                isLocal: true,
+                // Cor padrão - será mantida a cor original do SVG
+                color: '#000000'
+            };
+        });
+
+        localModelsLoaded = true;
+    } catch (error) {
+        console.error('Erro ao carregar modelos locais:', error);
+    }
+}
+
+/**
+ * Renderiza a visualização de modelos locais
+ */
+function renderLocalModels(container) {
+    if (!localModelsLoaded) {
+        loadLocalModels();
+    }
+
+    const localDiv = document.createElement('div');
+    localDiv.className = 'mb-6';
+
+    localDiv.innerHTML = `
+        <div class="category-header mb-4">
+            <h3 class="text-sm font-bold text-white">📂 Modelos Locais</h3>
+            <span class="text-xs text-gray-400">${localModels.length} ícones</span>
+        </div>
+    `;
+
+    const grid = document.createElement('div');
+    grid.className = 'grid grid-cols-[repeat(auto-fill,minmax(90px,1fr))] gap-2';
+
+    localModels.forEach((model, index) => {
+        const langId = `local-${index}`;
+
+        const card = document.createElement('div');
+        card.className = 'icon-card';
+        card.dataset.name = model.name.toLowerCase();
+        card.dataset.category = 'Modelos Locais';
+        card.dataset.langid = langId;
+        card.dataset.langData = JSON.stringify(model);
+        card.onclick = () => toggleSelection(card, model);
+
+        card.innerHTML = `
+            <img src="${model.path}" alt="${model.name}" onerror="this.style.display='none'">
+            <p class="text-white text-xs font-semibold text-center leading-tight">${model.name}</p>
+            <div class="quantity-input w-full">
+                <label class="text-xs text-gray-400">Qtd:</label>
+                <input type="number" id="qty-${langId}" min="1" value="1"
+                    onchange="updateIconQuantity('${langId}', this.value)"
+                    onclick="event.stopPropagation()">
+            </div>
+            <div class="individual-settings w-full">
+                <label class="text-xs text-gray-400">Fundo:</label>
+                <select id="bg-${langId}" onchange="updateIconSettings('${langId}', 'background', this.value)" onclick="event.stopPropagation()" class="text-xs">
+                    <option value="global">Global</option>
+                    <option value="transparent">Transparente</option>
+                    <option value="icon_color">Cor do Ícone</option>
+                    <option value="white">Branco</option>
+                    <option value="black">Preto</option>
+                    <option value="auto_contrast">Contraste Auto</option>
+                    <option value="complementary">Complementar</option>
+                    <option value="light_pastel">Pastel</option>
+                    <option value="dark_vibrant">Escuro</option>
+                </select>
+                <label class="text-xs text-gray-400 mt-1">Contorno:</label>
+                <select id="outline-${langId}" onchange="updateIconSettings('${langId}', 'outline', this.value)" onclick="event.stopPropagation()" class="text-xs">
+                    <option value="global">Global</option>
+                    <option value="none">Sem Contorno</option>
+                    <option value="auto">Automático</option>
+                    <option value="double">Duplo</option>
+                    <option value="white">Branco</option>
+                    <option value="black">Preto</option>
+                    <option value="complementary">Complementar</option>
+                </select>
+            </div>
+        `;
+
+        grid.appendChild(card);
+    });
+
+    localDiv.appendChild(grid);
+    container.appendChild(localDiv);
+
+    // Restaurar seleções
+    for (const [langId, quantity] of selectedLanguages.entries()) {
+        const card = document.querySelector(`[data-langid="${langId}"]`);
+        if (card) {
+            card.classList.add('selected');
+            const qtyInput = card.querySelector(`#qty-${langId}`);
+            if (qtyInput) qtyInput.value = quantity;
+
+            const settings = iconCustomSettings.get(langId);
+            if (settings) {
+                const bgSelect = card.querySelector(`#bg-${langId}`);
+                const outlineSelect = card.querySelector(`#outline-${langId}`);
+                if (bgSelect) bgSelect.value = settings.background || 'global';
+                if (outlineSelect) outlineSelect.value = settings.outline || 'global';
+            }
+        }
+    }
+
+    updateStats();
+    updatePreview();
+}
+
 function renderLanguages() {
     const container = document.getElementById('languagesContainer');
     container.innerHTML = '';
 
-    if (currentView === 'grouped') {
+    if (currentView === 'local') {
+        // Visualização de modelos locais
+        renderLocalModels(container);
+    } else if (currentView === 'grouped') {
         // Visualização agrupada por categoria
         for (const [category, languages] of Object.entries(languagesData)) {
             const categoryDiv = document.createElement('div');
@@ -764,17 +985,28 @@ function toggleView(view) {
     // Atualizar botões
     const btnGrouped = document.getElementById('viewGrouped');
     const btnAll = document.getElementById('viewAll');
+    const btnLocal = document.getElementById('viewLocal');
 
+    // Remove todas as classes ativas
+    [btnGrouped, btnAll, btnLocal].forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-white');
+        btn.classList.add('text-gray-400');
+    });
+
+    // Adiciona classe ativa ao botão selecionado
     if (view === 'grouped') {
         btnGrouped.classList.add('bg-primary', 'text-white');
         btnGrouped.classList.remove('text-gray-400');
-        btnAll.classList.remove('bg-primary', 'text-white');
-        btnAll.classList.add('text-gray-400');
-    } else {
+    } else if (view === 'all') {
         btnAll.classList.add('bg-primary', 'text-white');
         btnAll.classList.remove('text-gray-400');
-        btnGrouped.classList.remove('bg-primary', 'text-white');
-        btnGrouped.classList.add('text-gray-400');
+    } else if (view === 'local') {
+        btnLocal.classList.add('bg-primary', 'text-white');
+        btnLocal.classList.remove('text-gray-400');
+        // Carrega modelos locais se ainda não foram carregados
+        if (!localModelsLoaded) {
+            loadLocalModels();
+        }
     }
 
     // Re-renderizar com a nova visualização
@@ -1130,6 +1362,24 @@ async function fetchAllIcons(selectedArray, showLoading = true) {
 
         const lang = JSON.parse(card.dataset.langData || '{}');
 
+        // Se é um modelo local, carrega do caminho local
+        if (lang.isLocal) {
+            if (showLoading) {
+                document.getElementById('loadingProgress').textContent = `${lang.name} (${i + 1}/${total})`;
+            }
+            try {
+                const response = await fetch(lang.path);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const svgText = await response.text();
+                // IMPORTANTE: Para modelos locais, NÃO substitui cores - mantém originais
+                iconsData[langId] = { lang, svgText, keepOriginalColors: true };
+            } catch (error) {
+                console.error(`Erro ao buscar modelo local ${lang.name}:`, error);
+                iconsData[langId] = { lang, svgText: null };
+            }
+            continue;
+        }
+
         // Se tem SVG customizado, usa diretamente
         if (lang.customSvg) {
             iconsData[langId] = { lang, svgText: lang.customSvg };
@@ -1416,13 +1666,25 @@ function generateSheetSVG(sheetIndex, stickerSize, spacing, shape, maxFit, icons
             const lang = iconData.lang;
             const iconColor = (layerType === 'cores') ? (lang.color || '#cccccc') : 'white';
 
+            // Para modelos locais, SEMPRE mantém as cores originais na camada CORES
+            const isLocalModel = iconData.keepOriginalColors === true;
+
             // Detecta se precisa aplicar cor
             const usesCurrentColor = iconData.svgText.includes('currentColor');
             const hasOnlyBlack = /fill="(#000|#000000|black|currentColor)"/.test(iconData.svgText) &&
                                  !/fill="#(?!000$|000000$)[0-9a-fA-F]{3,6}"/.test(iconData.svgText);
 
-            const shouldReplaceColor = (layerType === 'branco' || layerType === 'verniz') ||
-                                       (layerType === 'cores' && (usesCurrentColor || hasOnlyBlack));
+            let shouldReplaceColor;
+            if (isLocalModel && layerType === 'cores') {
+                // Modelos locais: não substituir cores na camada CORES (mantém originais)
+                shouldReplaceColor = false;
+            } else if (layerType === 'branco' || layerType === 'verniz') {
+                // Camadas BRANCO e VERNIZ: sempre branco
+                shouldReplaceColor = true;
+            } else {
+                // Outros ícones: substitui se necessário
+                shouldReplaceColor = (usesCurrentColor || hasOnlyBlack);
+            }
 
             const innerHTML = getSanitizedSvgContent(iconData.svgText, uniquePrefix, shouldReplaceColor ? iconColor : null);
             // Coloca o conteúdo (incluindo <style> e <defs> locais) DENTRO do <symbol>
