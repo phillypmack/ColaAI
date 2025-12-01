@@ -590,6 +590,42 @@ function renderLocalModels(container) {
     const localDiv = document.createElement('div');
     localDiv.className = 'mb-6';
 
+    // Verifica se está rodando via file:// (sem servidor)
+    const isFileProtocol = window.location.protocol === 'file:';
+
+    if (isFileProtocol) {
+        localDiv.innerHTML = `
+            <div class="bg-[#ff6b6b] border-2 border-[#ff5252] rounded-lg p-6 mb-4">
+                <div class="flex items-start gap-3 mb-3">
+                    <span class="text-4xl">⚠️</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-white mb-2">Servidor HTTP Necessário!</h3>
+                        <p class="text-sm text-white leading-relaxed mb-3">
+                            Para usar Modelos Locais, você precisa executar um servidor HTTP local.
+                            O navegador bloqueia acesso a arquivos locais por segurança (CORS policy).
+                        </p>
+                    </div>
+                </div>
+                <div class="bg-[#1e1933] rounded-lg p-4 mb-3">
+                    <p class="text-xs font-bold text-white mb-2">🚀 Soluções Rápidas:</p>
+                    <div class="space-y-2 text-xs text-gray-300">
+                        <p><strong class="text-white">Opção 1:</strong> Dê duplo clique em <code class="bg-[#2a2440] px-2 py-1 rounded text-primary">start-server.bat</code></p>
+                        <p><strong class="text-white">Opção 2:</strong> Execute no terminal: <code class="bg-[#2a2440] px-2 py-1 rounded text-primary">python -m http.server 5173</code></p>
+                        <p><strong class="text-white">Opção 3:</strong> Execute no terminal: <code class="bg-[#2a2440] px-2 py-1 rounded text-primary">npm run dev</code></p>
+                    </div>
+                </div>
+                <p class="text-xs text-white">
+                    📖 Depois acesse: <strong class="text-yellow-300">http://localhost:5173</strong>
+                </p>
+                <p class="text-xs text-gray-300 mt-2">
+                    Leia: <strong>COMO_USAR_MODELOS_LOCAIS.md</strong> para mais detalhes
+                </p>
+            </div>
+        `;
+        container.appendChild(localDiv);
+        return; // Para aqui, não renderiza os modelos
+    }
+
     localDiv.innerHTML = `
         <div class="category-header mb-4">
             <h3 class="text-sm font-bold text-white">📂 Modelos Locais</h3>

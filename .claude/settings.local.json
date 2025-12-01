@@ -3,7 +3,9 @@
     "allow": [
       "Bash(start \"\" \"c:\\Users\\felip\\Downloads\\Aplicações\\Cola\\gerador-adesivos-profissional.html\")",
       "Bash(node -e:*)",
-      "Bash(start \"\" \"c:\\Users\\felip\\Downloads\\Aplicações\\Cola\\index.html\")"
+      "Bash(start \"\" \"c:\\Users\\felip\\Downloads\\Aplicações\\Cola\\index.html\")",
+      "Bash(start cmd /k \"python -m http.server 5173\")",
+      "Bash(start http://localhost:5173)"
     ],
     "deny": [],
     "ask": []

@@ -1,5 +1,21 @@
 # Modelos Locais - Documentação
 
+## ⚠️ IMPORTANTE: Como Executar
+
+**ATENÇÃO**: Para usar os Modelos Locais, você DEVE executar a aplicação através de um servidor HTTP local. Não funciona abrindo o arquivo HTML diretamente!
+
+### 🚀 Início Rápido
+
+**Opção 1 - Mais Fácil**: Dê duplo clique em `start-server.bat`
+**Opção 2 - Manual**: Execute `python -m http.server 5173` no terminal
+**Opção 3 - Vite**: Execute `npm run dev` no terminal
+
+Depois acesse: **http://localhost:5173**
+
+📖 **Leia o arquivo**: [COMO_USAR_MODELOS_LOCAIS.md](COMO_USAR_MODELOS_LOCAIS.md) para instruções detalhadas
+
+---
+
 ## Visão Geral
 
 A funcionalidade de **Modelos Locais** permite que você utilize SVGs armazenados localmente na pasta `svg/` do projeto, mantendo suas cores originais durante a geração dos adesivos DTF UV.

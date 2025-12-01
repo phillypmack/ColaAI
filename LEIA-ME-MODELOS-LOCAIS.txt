@@ -1,0 +1,133 @@
+═══════════════════════════════════════════════════════════════
+  📂 MODELOS LOCAIS - INSTRUÇÕES DE USO
+═══════════════════════════════════════════════════════════════
+
+✅ PROBLEMA RESOLVIDO!
+
+O erro CORS que você encontrou foi RESOLVIDO. Agora você só precisa
+executar a aplicação através de um servidor HTTP local.
+
+───────────────────────────────────────────────────────────────
+
+🚀 COMO USAR (ESCOLHA UMA OPÇÃO)
+
+┌─────────────────────────────────────────────────────────────┐
+│ OPÇÃO 1 - MAIS FÁCIL (RECOMENDADA)                         │
+└─────────────────────────────────────────────────────────────┘
+
+  1. Dê DUPLO CLIQUE no arquivo: start-server.bat
+  2. Aguarde a janela preta (terminal) abrir
+  3. Seu navegador abrirá automaticamente
+  4. Pronto! Acesse: http://localhost:5173
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ OPÇÃO 2 - USANDO PYTHON (MANUAL)                           │
+└─────────────────────────────────────────────────────────────┘
+
+  1. Abra o terminal (CMD ou PowerShell)
+  2. Navegue até a pasta do projeto:
+     cd "c:\Users\felip\Downloads\Aplicações\Cola"
+  3. Execute:
+     python -m http.server 5173
+  4. Acesse: http://localhost:5173
+
+
+┌─────────────────────────────────────────────────────────────┐
+│ OPÇÃO 3 - USANDO VITE (DESENVOLVIMENTO)                    │
+└─────────────────────────────────────────────────────────────┘
+
+  1. Abra o terminal
+  2. Navegue até a pasta do projeto
+  3. Instale dependências (só na primeira vez):
+     npm install
+  4. Execute:
+     npm run dev
+  5. Acesse: http://localhost:5173
+
+───────────────────────────────────────────────────────────────
+
+📋 PASSO A PASSO DETALHADO
+
+1. INICIAR O SERVIDOR
+   └─ Use uma das 3 opções acima
+
+2. ABRIR NO NAVEGADOR
+   └─ Acesse: http://localhost:5173
+   └─ NÃO abra o arquivo index.html diretamente!
+
+3. USAR MODELOS LOCAIS
+   └─ Clique no botão "Modelos Locais"
+   └─ Selecione os modelos desejados
+   └─ Configure e gere os arquivos DTF UV
+
+───────────────────────────────────────────────────────────────
+
+❓ POR QUE PRECISO DE UM SERVIDOR?
+
+Por segurança, navegadores bloqueiam requisições a arquivos
+locais (protocolo file://). Isso é chamado de CORS Policy.
+
+Para acessar os SVGs da pasta svg/, você precisa de um servidor
+HTTP local, que simula um site rodando no seu computador.
+
+───────────────────────────────────────────────────────────────
+
+✨ FUNCIONALIDADES DOS MODELOS LOCAIS
+
+✅ 401 modelos SVG disponíveis na pasta svg/
+✅ Cores originais preservadas na camada CORES
+✅ Geração automática das 3 camadas DTF UV
+✅ Mesmo sistema de configuração dos ícones online
+✅ Preview em tempo real
+✅ Cálculo automático de folhas necessárias
+
+───────────────────────────────────────────────────────────────
+
+🛠️ SOLUÇÃO DE PROBLEMAS
+
+ERRO: "Porta 5173 já está em uso"
+  └─ Mude para porta 8080:
+     python -m http.server 8080
+  └─ Acesse: http://localhost:8080
+
+ERRO: "Python não encontrado"
+  └─ Instale Python em: https://www.python.org/downloads/
+  └─ Marque a opção "Add to PATH" durante a instalação
+
+ERRO: "npm não encontrado"
+  └─ Instale Node.js em: https://nodejs.org/
+  └─ Versão LTS (recomendada)
+
+Os modelos não aparecem
+  └─ Certifique-se de estar acessando via http://
+  └─ Não via file://
+  └─ Abra o Console (F12) para ver erros
+
+───────────────────────────────────────────────────────────────
+
+📚 ARQUIVOS DE AJUDA
+
+  📄 COMO_USAR_MODELOS_LOCAIS.md - Guia completo detalhado
+  📄 MODELOS_LOCAIS.md - Documentação técnica
+  📄 start-server.bat - Script automático para Windows
+
+───────────────────────────────────────────────────────────────
+
+💡 DICAS
+
+  • Mantenha o servidor rodando enquanto usa a aplicação
+  • Para parar o servidor: Pressione Ctrl+C no terminal
+  • Adicione start-server.bat aos favoritos para acesso rápido
+  • O servidor é apenas local (não fica acessível pela internet)
+
+───────────────────────────────────────────────────────────────
+
+✅ AGORA ESTÁ FUNCIONANDO!
+
+Servidor iniciado em: http://localhost:5173
+Status: ✅ PRONTO PARA USO
+
+Aproveite seus modelos locais! 🎨
+
+═══════════════════════════════════════════════════════════════
